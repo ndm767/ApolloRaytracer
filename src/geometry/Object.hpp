@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../HitData.hpp"
+
 #include <glm/glm.hpp>
 
 // object parent class
@@ -9,7 +11,7 @@ class Object {
     virtual ~Object() {}
 
     // see if ray intersects with object
-    virtual bool testIntersection(glm::vec3 rayOrig, glm::vec3 rayDir) = 0;
+    virtual bool testIntersection(HitData &data) = 0;
 
   protected:
     glm::vec3 pos;
