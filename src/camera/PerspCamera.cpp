@@ -1,4 +1,5 @@
 #include "PerspCamera.hpp"
+#include "../Ray.hpp"
 
 #include <glm/gtx/rotate_vector.hpp>
 

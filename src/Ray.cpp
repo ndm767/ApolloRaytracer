@@ -7,10 +7,12 @@ Ray::Ray(glm::vec3 origin, glm::vec3 direction) {
 
 Ray::~Ray() {}
 
-glm::vec3 Ray::traceRay(Object *o) {
+glm::vec3 Ray::traceRay(Scene &s) {
 
-    if (o->testIntersection(orig, dir)) {
-        return glm::vec3(1, 1, 1);
+    for (auto o : s.getObjects()) {
+        if (o->testIntersection(orig, dir)) {
+            return glm::vec3(1, 1, 1);
+        }
     }
 
     return glm::vec3(0, 0, 0);

@@ -1,6 +1,10 @@
 #pragma once
 
-#include "../Ray.hpp"
+#include <glm/glm.hpp>
+
+// forward declaration because camera references ray which references scene
+// which references camera
+class Ray;
 
 // camera parent class
 class Camera {

@@ -2,14 +2,14 @@
 
 #include <glm/glm.hpp>
 
-#include "geometry/Object.hpp"
+#include "Scene.hpp"
 
 class Ray {
   public:
     Ray(glm::vec3 origin, glm::vec3 direction);
     ~Ray();
 
-    glm::vec3 traceRay(Object *o);
+    glm::vec3 traceRay(Scene &s);
 
   protected:
     glm::vec3 orig;
