@@ -21,6 +21,11 @@ int Scene::addCamera(std::shared_ptr<Camera> c) {
     return cams.size() - 1;
 }
 
+int Scene::addLight(std::shared_ptr<Light> l) {
+    lights.push_back(l);
+    return lights.size() - 1;
+}
+
 void Scene::setActiveCamera(unsigned index) {
     if (index < cams.size()) {
         activeCamera = index;
