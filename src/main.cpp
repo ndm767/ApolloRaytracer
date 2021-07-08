@@ -13,10 +13,16 @@ int main(int argc, char *argv[]) {
     Scene s(400, 400, glm::vec3(1, 1, 1), 0.1f);
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
-    Material grey(glm::vec3(0.5f), glm::vec3(0.25f), 10);
+    Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
+    Material green(glm::vec3(0, 1, 0), glm::vec3(0.5f), 10);
+    red.setUseReflection(true);
+    red.setReflectionCoef(0.75f);
+    grey.setUseReflection(true);
+    grey.setReflectionCoef(0.25f);
 
     s.addObject(std::make_shared<Sphere>(glm::vec3(0, 0, 5), 1.0f, red));
     s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f, grey));
+    s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 2, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 2), 0.5f));

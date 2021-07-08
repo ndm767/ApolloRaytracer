@@ -9,7 +9,7 @@ class Ray {
     Ray(glm::vec3 origin, glm::vec3 direction);
     ~Ray();
 
-    glm::vec3 traceRay(Scene &s);
+    glm::vec3 traceRay(Scene &s, int depth = 0);
 
     glm::vec3 getOrig() { return orig; }
     glm::vec3 getDir() { return dir; }
@@ -21,7 +21,7 @@ class Ray {
 
   protected:
     // calculate the color returned by the ray
-    glm::vec3 calcColor(Scene &s, HitData &data);
+    glm::vec3 calcColor(Scene &s, HitData &data, int depth);
 
     glm::vec3 orig;
     glm::vec3 dir;

@@ -31,7 +31,7 @@ bool Ray::isThereIntersection(Scene &s, float *distSq) {
 }
 
 // calculate ray hit color using phong
-glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
+glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
 
     Material *objMat = data.getHitMat();
 
@@ -81,12 +81,25 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
         }
     }
 
+    constexpr int MAX_DEPTH = 3;
+
+    // reflections
+    if (depth < MAX_DEPTH && objMat->getUseReflection()) {
+        glm::vec3 oppViewDir = -1.0f * viewDir;
+        glm::vec3 reflectDir =
+            oppViewDir - 2.0f * glm::dot(oppViewDir, hitNorm) * hitNorm;
+
+        Ray reflectRay(hitPos + hitNorm * 0.0001f, reflectDir);
+        retCol +=
+            objMat->getReflectionCoef() * reflectRay.traceRay(s, depth + 1);
+    }
+
     retCol = glm::clamp(retCol, glm::vec3(0.0f), glm::vec3(1.0f));
 
     return retCol;
 }
 
-glm::vec3 Ray::traceRay(Scene &s) {
+glm::vec3 Ray::traceRay(Scene &s, int depth) {
 
     HitData closestData(orig, dir);
     closestData.setObjDistSq(INFINITY);
@@ -104,7 +117,7 @@ glm::vec3 Ray::traceRay(Scene &s) {
     }
 
     if (foundObj) {
-        return calcColor(s, closestData);
+        return calcColor(s, closestData, depth);
     }
 
     return s.getAmbientColor() * s.getAmbientStrength();

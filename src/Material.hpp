@@ -15,15 +15,24 @@ class Material {
 
     float getPhongExponent() { return phongExponent; }
 
+    bool getUseReflection() { return useReflection; }
+    float getReflectionCoef() { return reflectionCoef; }
+
     // setters
     void setDiffuse(glm::vec3 color) { diffuse = color; }
     void setSpecular(glm::vec3 color) { specular = color; }
 
     void setPhongExponent(float exponent) { phongExponent = exponent; }
 
+    void setUseReflection(bool val) { useReflection = val; }
+    void setReflectionCoef(float coef) { reflectionCoef = coef; }
+
   protected:
     glm::vec3 diffuse;
     glm::vec3 specular;
 
     float phongExponent;
+
+    bool useReflection;
+    float reflectionCoef;
 };
