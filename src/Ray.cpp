@@ -33,8 +33,10 @@ bool Ray::isThereIntersection(Scene &s, float *distSq) {
 // calculate ray hit color using phong
 glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
 
+    Material *objMat = data.getHitMat();
+
     glm::vec3 retCol =
-        s.getAmbientStrength() * s.getAmbientColor() * data.getHitColor();
+        s.getAmbientStrength() * s.getAmbientColor() * objMat->getDiffuse();
 
     glm::vec3 hitPos = data.getHitPos();
     glm::vec3 hitNorm = data.getHitNormal();
@@ -61,17 +63,17 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
         if (!inter || interDist > lDist) {
             glm::vec3 diffSpec = glm::vec3(0, 0, 0);
 
-            glm::vec3 diffuse = data.getHitColor() * l->getCol();
+            glm::vec3 diffuse = objMat->getDiffuse() * l->getCol();
             diffuse = diffuse * std::max(glm::dot(lightDir, hitNorm), 0.0f);
             diffuse *= l->getIntensity();
 
             diffSpec += diffuse;
 
             glm::vec3 half = glm::normalize(viewDir + lightDir);
-            glm::vec3 specular = data.getHitColor() * l->getCol();
-            float p = 100;
+            glm::vec3 specular = objMat->getSpecular() * l->getCol();
             specular =
-                specular * std::pow(std::max(glm::dot(half, hitNorm), 0.0f), p);
+                specular * std::pow(std::max(glm::dot(half, hitNorm), 0.0f),
+                                    objMat->getPhongExponent());
 
             diffSpec += specular;
 

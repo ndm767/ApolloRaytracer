@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-Sphere::Sphere(glm::vec3 center, float radius, glm::vec3 color) {
+Sphere::Sphere(glm::vec3 center, float radius, Material mat) {
     r = radius;
     pos = center;
-    col = color;
+    objMat = mat;
 }
 
 Sphere::~Sphere() {}
@@ -47,7 +47,7 @@ bool Sphere::testIntersection(HitData &data) {
                            std::pow(rayOrig.y - hitPos.y, 2) +
                            std::pow(rayOrig.z - hitPos.z, 2);
 
-            data.setHitColor(col);
+            data.setHitMat(&objMat);
             data.setHitNormal(hitNorm);
             data.setHitPos(hitPos);
             data.setObjDistSq(distSq);

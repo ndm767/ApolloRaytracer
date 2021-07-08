@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../HitData.hpp"
+#include "../Material.hpp"
 
 #include <glm/glm.hpp>
 
@@ -13,9 +14,9 @@ class Object {
     // see if ray intersects with object
     virtual bool testIntersection(HitData &data) = 0;
 
-    glm::vec3 getColor() { return col; }
+    Material &getMaterial() { return objMat; }
 
   protected:
     glm::vec3 pos;
-    glm::vec3 col;
+    Material objMat;
 };
