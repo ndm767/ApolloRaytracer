@@ -2,7 +2,7 @@
 
 Ray::Ray(glm::vec3 origin, glm::vec3 direction) {
     orig = origin;
-    dir = direction;
+    dir = glm::normalize(direction);
 }
 
 Ray::~Ray() {}

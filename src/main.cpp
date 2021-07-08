@@ -1,17 +1,18 @@
 #include "Ray.hpp"
+#include "camera/PerspCamera.hpp"
 #include "display/SDLDisplay.hpp"
 #include "geometry/Sphere.hpp"
 
 int main(int argc, char *argv[]) {
     Display *output = new SDLDisplay(400, 400);
 
-    Object *s = new Sphere(glm::vec3(0, 0, 2), 1.0f);
+    Camera *cam = new PerspCamera(400, 400, glm::vec3(0, 0, 0),
+                                  glm::vec3(0, 0, 1), 60.0f);
+    Object *s = new Sphere(glm::vec3(0, 0, 3), 1.0f);
 
     for (int x = 0; x < 400; x++) {
         for (int y = 0; y < 400; y++) {
-            Ray r(
-                glm::vec3(2 * x / 400.0f - 1.0f, 2 * y / 400.0f - 1.0f, -1.0f),
-                glm::vec3(0, 0, 1));
+            Ray r = cam->getRayAtPixel(x, y);
             output->drawPixel(x, y, r.traceRay(s));
         }
     }
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
     }
 
     delete s;
+    delete cam;
     delete output;
     return 0;
 }

@@ -3,6 +3,7 @@ PNAME := apollo
 PCXXSRC := $(wildcard src/*.cpp)
 PCXXSRC += $(wildcard src/display/*.cpp)
 PCXXSRC += $(wildcard src/geometry/*.cpp)
+PCXXSRC += $(wildcard src/camera/*.cpp)
 
 POBJS := $(PCXXSRC:.cpp=.o)
 
