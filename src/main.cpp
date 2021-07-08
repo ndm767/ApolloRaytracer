@@ -12,11 +12,12 @@ int main(int argc, char *argv[]) {
                                   glm::vec3(0, 0, 1), 60.0f);
     Scene s(400, 400, glm::vec3(1, 1, 1), 0.1f);
     s.addObject(
-        std::make_shared<Sphere>(glm::vec3(0, 0, 3), 1.0f, glm::vec3(1, 0, 0)));
-    s.addObject(std::make_shared<Sphere>(glm::vec3(0.5f, 1.5f, 2), 0.5f,
-                                         glm::vec3(0, 1, 0)));
+        std::make_shared<Sphere>(glm::vec3(0, 0, 5), 1.0f, glm::vec3(1, 0, 0)));
+    s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f,
+                                         glm::vec3(0.5f, 0.5f, 0.5f)));
 
-    s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 3), 1.0f));
+    s.addLight(std::make_shared<Light>(glm::vec3(0, 2, 4), 1.0f));
+    s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 4), 0.5f));
 
     for (int x = 0; x < 400; x++) {
         for (int y = 0; y < 400; y++) {

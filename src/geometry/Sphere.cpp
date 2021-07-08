@@ -1,5 +1,7 @@
 #include "Sphere.hpp"
 
+#include <iostream>
+
 Sphere::Sphere(glm::vec3 center, float radius, glm::vec3 color) {
     r = radius;
     pos = center;
@@ -39,7 +41,7 @@ bool Sphere::testIntersection(HitData &data) {
         float epsilon = std::pow(2.0f, -52.0f);
         if (coef > epsilon) {
             glm::vec3 hitPos = rayOrig + rayDir * coef;
-            glm::vec3 hitNorm = hitPos - pos;
+            glm::vec3 hitNorm = glm::normalize(hitPos - pos);
 
             float distSq = std::pow(rayOrig.x - hitPos.x, 2) +
                            std::pow(rayOrig.y - hitPos.y, 2) +

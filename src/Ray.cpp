@@ -30,7 +30,7 @@ bool Ray::isThereIntersection(Scene &s, float *distSq) {
     return foundObj;
 }
 
-// calculate ray hit color
+// calculate ray hit color using phong
 glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
 
     glm::vec3 retCol =
@@ -39,11 +39,13 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
     glm::vec3 hitPos = data.getHitPos();
     glm::vec3 hitNorm = data.getHitNormal();
 
+    glm::vec3 viewDir = glm::normalize(orig - hitPos);
+
     for (auto l : s.getLights()) {
 
         glm::vec3 lPos = l->getPos();
 
-        glm::vec3 lightDir = lPos - hitPos;
+        glm::vec3 lightDir = glm::normalize(lPos - hitPos);
 
         // we add a little bit of the normal to the hit position so we don't get
         // self-intersections
@@ -55,12 +57,25 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
                       std::pow(hitPos.y - lPos.y, 2) +
                       std::pow(hitPos.z - lPos.z, 2);
 
+        // if there is nothing between the hit and the light, apply lighting
         if (!inter || interDist > lDist) {
+            glm::vec3 diffSpec = glm::vec3(0, 0, 0);
+
             glm::vec3 diffuse = data.getHitColor() * l->getCol();
             diffuse = diffuse * std::max(glm::dot(lightDir, hitNorm), 0.0f);
             diffuse *= l->getIntensity();
 
-            retCol += diffuse;
+            diffSpec += diffuse;
+
+            glm::vec3 half = glm::normalize(viewDir + lightDir);
+            glm::vec3 specular = data.getHitColor() * l->getCol();
+            float p = 100;
+            specular =
+                specular * std::pow(std::max(glm::dot(half, hitNorm), 0.0f), p);
+
+            diffSpec += specular;
+
+            retCol += diffSpec;
         }
     }
 
@@ -90,5 +105,5 @@ glm::vec3 Ray::traceRay(Scene &s) {
         return calcColor(s, closestData);
     }
 
-    return glm::vec3(0, 0, 0);
+    return s.getAmbientColor() * s.getAmbientStrength();
 }
