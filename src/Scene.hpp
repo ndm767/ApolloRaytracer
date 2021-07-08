@@ -10,7 +10,7 @@
 // class that hold entire scene
 class Scene {
   public:
-    Scene(int width, int height);
+    Scene(int width, int height, glm::vec3 ambientCol, float ambientStr);
     ~Scene();
 
     // add functions return the index of the thing added
@@ -24,10 +24,16 @@ class Scene {
     std::shared_ptr<Camera> getActiveCamera() { return cams.at(activeCamera); }
     void setActiveCamera(unsigned index);
 
+    glm::vec3 getAmbientColor() { return ambientColor; }
+    float getAmbientStrength() { return ambientStrength; }
+
   protected:
     std::vector<std::shared_ptr<Object>> objs;
     std::vector<std::shared_ptr<Camera>> cams;
     std::vector<std::shared_ptr<Light>> lights;
+
+    glm::vec3 ambientColor;
+    float ambientStrength;
 
     unsigned activeCamera;
 };

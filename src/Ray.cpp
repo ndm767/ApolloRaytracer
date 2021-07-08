@@ -32,8 +32,9 @@ bool Ray::isThereIntersection(Scene &s, float *distSq) {
 
 // calculate ray hit color
 glm::vec3 Ray::calcColor(Scene &s, HitData &data) {
-    float ambientStrength = 0.25f;
-    glm::vec3 retCol = ambientStrength * data.getHitColor();
+
+    glm::vec3 retCol =
+        s.getAmbientStrength() * s.getAmbientColor() * data.getHitColor();
 
     glm::vec3 hitPos = data.getHitPos();
     glm::vec3 hitNorm = data.getHitNormal();

@@ -2,11 +2,15 @@
 
 #include "camera/PerspCamera.hpp"
 
-Scene::Scene(int screenWidth, int screenHeight) {
+Scene::Scene(int screenWidth, int screenHeight, glm::vec3 ambientCol,
+             float ambientStr) {
     activeCamera = 0;
     cams.push_back(std::make_shared<PerspCamera>(screenWidth, screenHeight,
                                                  glm::vec3(0, 0, 0),
                                                  glm::vec3(0, 0, 1), 60.0f));
+
+    ambientStrength = ambientStr;
+    ambientColor = ambientCol;
 }
 
 Scene::~Scene() {}
