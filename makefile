@@ -1,6 +1,7 @@
 PNAME := apollo
 
 PCXXSRC := $(wildcard src/*.cpp)
+PCXXSRC += $(wildcard src/display/*.cpp)
 
 POBJS := $(PCXXSRC:.cpp=.o)
 
