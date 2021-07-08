@@ -11,6 +11,9 @@ class Ray {
 
     glm::vec3 traceRay(Scene &s);
 
+    glm::vec3 getOrig() { return orig; }
+    glm::vec3 getDir() { return dir; }
+
   protected:
     glm::vec3 orig;
     glm::vec3 dir;
