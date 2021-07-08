@@ -10,8 +10,8 @@ Ray::~Ray() {}
 
 glm::vec3 Ray::traceRay(Scene &s) {
 
-    HitData lastData(orig, dir);
-    lastData.setObjDistSq(INFINITY);
+    HitData closestData(orig, dir);
+    closestData.setObjDistSq(INFINITY);
 
     bool foundObj = false;
 
@@ -19,14 +19,14 @@ glm::vec3 Ray::traceRay(Scene &s) {
         HitData tempData(orig, dir);
         if (o->testIntersection(tempData)) {
             foundObj = true;
-            if (tempData.getObjDistSq() < lastData.getObjDistSq()) {
-                lastData = tempData;
+            if (tempData.getObjDistSq() < closestData.getObjDistSq()) {
+                closestData = tempData;
             }
         }
     }
 
     if (foundObj) {
-        return glm::vec3(1, 1, 1);
+        return closestData.getHitColor();
     }
 
     return glm::vec3(0, 0, 0);

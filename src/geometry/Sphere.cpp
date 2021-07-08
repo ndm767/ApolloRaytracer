@@ -1,8 +1,9 @@
 #include "Sphere.hpp"
 
-Sphere::Sphere(glm::vec3 center, float radius) {
+Sphere::Sphere(glm::vec3 center, float radius, glm::vec3 color) {
     r = radius;
     pos = center;
+    col = color;
 }
 
 Sphere::~Sphere() {}
@@ -37,6 +38,7 @@ bool Sphere::testIntersection(HitData &data) {
                            (hitPos.y - rayOrig.y) * (hitPos.y - rayOrig.y) +
                            (hitPos.z - rayOrig.z) * (hitPos.z - rayOrig.z);
             data.setObjDistSq(distSq);
+            data.setHitColor(col);
 
             return true;
         } else {
@@ -63,6 +65,7 @@ bool Sphere::testIntersection(HitData &data) {
                 data.setHitNormal(hitPosPos - pos);
                 data.setObjDistSq(distSqPos);
             }
+            data.setHitColor(col);
             return true;
         }
     }
