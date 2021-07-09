@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
     Material green(glm::vec3(0, 1, 0), glm::vec3(0.5f), 10);
     red.setUseReflection(true);
-    red.setReflectionCoef(0.75f);
+    red.setReflectionCoef(0.5f);
     grey.setUseReflection(true);
     grey.setReflectionCoef(0.25f);
 

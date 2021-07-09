@@ -44,6 +44,7 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
             zVals.push_back(transVert.z);
 
             verts.push_back(transVert);
+            pos += transVert;
 
             aiVector3D currNorm = currMesh->mNormals[v];
             normals.push_back(glm::vec3(currNorm.x, currNorm.y, currNorm.z));
@@ -71,6 +72,9 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
             tris.push_back(
                 std::make_shared<Triangle>(triPoints, objMat, faceNorm));
         }
+
+        // get object position by averaging all vertices
+        pos /= currMesh->mNumVertices;
     }
 
     // make bounding box
