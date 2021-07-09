@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 2), 0.5f));
 
     bool shouldUpdate = true;
-    int res = 5;
+    int res = 1;
 
     while (!output->isFinished()) {
         if (shouldUpdate) {
