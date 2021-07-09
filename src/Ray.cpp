@@ -35,8 +35,8 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
 
     Material *objMat = data.getHitMat();
 
-    glm::vec3 retCol =
-        s.getAmbientStrength() * s.getAmbientColor() * objMat->getDiffuse();
+    glm::vec3 retCol = objMat->getDiffuse();
+    retCol *= s.getAmbientStrength() * s.getAmbientColor();
 
     glm::vec3 hitPos = data.getHitPos();
     glm::vec3 hitNorm = data.getHitNormal();
@@ -120,5 +120,8 @@ glm::vec3 Ray::traceRay(Scene &s, int depth) {
         return calcColor(s, closestData, depth);
     }
 
+    if (s.getUseIBL()) {
+        return s.getIBLColor(dir);
+    }
     return s.getAmbientColor() * s.getAmbientStrength();
 }

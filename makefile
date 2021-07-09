@@ -8,8 +8,7 @@ PCXXSRC += $(wildcard src/light/*.cpp)
 
 POBJS := $(PCXXSRC:.cpp=.o)
 
-CXXFLAGS += -std=c++17
-CXXFLAGS += -Wall -Wpedantic -Wextra
+CXXFLAGS += -std=c++17 -O3
 
 LDLIBS += -lSDL2
 

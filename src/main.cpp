@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
     Display *output = new SDLDisplay(width, height);
 
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
+    s.setIBL("assets/hdr/studio.hdr");
     output->setActiveCamera(s.getActiveCamera());
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);

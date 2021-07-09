@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Texture.hpp"
 #include "camera/Camera.hpp"
 #include "geometry/Object.hpp"
 #include "light/Light.hpp"
@@ -27,6 +28,11 @@ class Scene {
     glm::vec3 getAmbientColor() { return ambientColor; }
     float getAmbientStrength() { return ambientStrength; }
 
+    void setIBL(std::string path);
+
+    bool getUseIBL() { return useIBL; }
+    glm::vec3 getIBLColor(glm::vec3 dir);
+
   protected:
     std::vector<std::shared_ptr<Object>> objs;
     std::vector<std::shared_ptr<Camera>> cams;
@@ -36,4 +42,8 @@ class Scene {
     float ambientStrength;
 
     unsigned activeCamera;
+
+    // image-based lighting
+    bool useIBL;
+    Texture *iblImage;
 };
