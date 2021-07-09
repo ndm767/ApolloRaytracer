@@ -1,8 +1,8 @@
+#include "FileLoader.hpp"
 #include "Ray.hpp"
 #include "Scene.hpp"
 #include "camera/PerspCamera.hpp"
 #include "display/SDLDisplay.hpp"
-#include "geometry/Mesh.hpp"
 #include "geometry/Sphere.hpp"
 #include "light/Light.hpp"
 #include <iostream>
@@ -91,8 +91,10 @@ int main(int argc, char *argv[]) {
 
     s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f, grey));
     s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
-    s.addObject(std::make_shared<Mesh>("assets/models/bun_zipper_res4.ply",
-                                       glm::vec3(0, -1.334, 3), 10.0f, red));
+
+    FileLoader fl;
+    fl.loadFile("assets/models/bun_zipper_res4.ply", s, glm::vec3(0, -1.334, 3),
+                10.0f);
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));

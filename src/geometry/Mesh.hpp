@@ -7,9 +7,15 @@
 #include <string>
 #include <vector>
 
+struct MeshInput {
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    std::vector<unsigned> indices;
+};
+
 class Mesh : public Object {
   public:
-    Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat);
+    Mesh(MeshInput vals, glm::vec3 meshPos, float scale, Material mat);
     ~Mesh();
 
     bool testIntersection(HitData &data) override;
