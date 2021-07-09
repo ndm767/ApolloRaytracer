@@ -80,14 +80,14 @@ int main(int argc, char *argv[]) {
     // grey));
     // s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f,
     // green));
-    s.addObject(std::make_shared<Mesh>("assets/models/teapot.obj",
-                                       glm::vec3(0, 0, 3), 0.25f, green));
+    s.addObject(std::make_shared<Mesh>("assets/models/bun_zipper_res4.ply",
+                                       glm::vec3(0, -1, 3), 10.0f, red));
 
-    s.addLight(std::make_shared<Light>(glm::vec3(0, 2, 4), 1.0f));
-    s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 2), 0.5f));
+    s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
+    s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));
 
     bool shouldUpdate = true;
-    int res = 5;
+    int res = 2;
 
     while (!output->isFinished()) {
         if (shouldUpdate) {

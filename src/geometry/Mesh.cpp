@@ -60,8 +60,8 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
             faceNorm /= 3.0f;
             faceNorm = glm::normalize(faceNorm);
 
-            tris.push_back(std::make_shared<Triangle>(
-                triPoints, objMat, normals.at(indices.at(i))));
+            tris.push_back(
+                std::make_shared<Triangle>(triPoints, objMat, faceNorm));
         }
     }
 }
