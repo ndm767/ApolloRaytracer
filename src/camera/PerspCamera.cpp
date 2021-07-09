@@ -61,12 +61,6 @@ void PerspCamera::rotate(float deltaPitch, float deltaYaw) {
     dir = glm::rotate(dir, glm::radians(pitch), glm::vec3(1, 0, 0));
     dir = glm::rotate(dir, glm::radians(yaw), glm::vec3(0, 1, 0));
 
-    if (yaw < 0) {
-        yaw = 360 + yaw;
-    } else if (yaw > 360) {
-        yaw = yaw - 360;
-    }
-
     if (pitch > 60.0f) {
         pitch = 60.0f;
     } else if (pitch < -60.0f) {
