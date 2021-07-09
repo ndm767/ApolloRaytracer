@@ -43,6 +43,7 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
         lookDir = glm::rotate(lookDir, angle, axis);
     } else if (angle == pi) {
         lookDir.z *= -1.0f;
+        lookDir.x *= -1.0f;
     }
 
     // rotate lookDir to point towards where we actually want to look

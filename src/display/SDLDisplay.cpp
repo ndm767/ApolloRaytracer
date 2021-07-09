@@ -72,6 +72,7 @@ void SDLDisplay::flush() {
     SDL_RenderPresent(rRenderer);
 
     SDL_Event e;
+    bool keyEvent = false;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             finished = true;
@@ -79,12 +80,16 @@ void SDLDisplay::flush() {
             if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 finished = true;
             }
-
+            keyEvent = true;
             setKey(e.key);
+        } else if (e.type == SDL_KEYUP) {
+            keyEvent = true;
         }
     }
 
-    cleanKeys();
+    if (keyEvent) {
+        cleanKeys();
+    }
 }
 
 glm::vec3 SDLDisplay::getPixel(unsigned x, unsigned y) {
