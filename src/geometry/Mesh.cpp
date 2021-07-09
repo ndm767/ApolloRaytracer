@@ -13,14 +13,18 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
     const aiScene *scene = imp.ReadFile(
         path.c_str(),
         aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_GenNormals |
-            aiProcess_OptimizeMeshes | aiProcess_MakeLeftHanded |
-            aiProcess_PreTransformVertices | aiProcess_JoinIdenticalVertices |
-            aiProcess_FindDegenerates | aiProcess_FindInvalidData);
+            aiProcess_OptimizeMeshes | aiProcess_PreTransformVertices |
+            aiProcess_JoinIdenticalVertices | aiProcess_FindDegenerates |
+            aiProcess_FindInvalidData);
 
     if (std::string(imp.GetErrorString()).compare("") != 0) {
         std::cout << "Assimp error on file: " << path
                   << "\n Error: " << imp.GetErrorString() << std::endl;
     }
+
+    std::vector<float> xVals;
+    std::vector<float> yVals;
+    std::vector<float> zVals;
 
     for (unsigned m = 0; m < scene->mNumMeshes; m++) {
         aiMesh *currMesh = scene->mMeshes[m];
@@ -33,9 +37,13 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
         // get vertices and vertex normals
         for (unsigned v = 0; v < currMesh->mNumVertices; v++) {
             aiVector3D currVert = currMesh->mVertices[v];
-            verts.push_back(glm::vec3(currVert.x, currVert.y, currVert.z) *
-                                scale +
-                            meshPos);
+            glm::vec3 transVert =
+                glm::vec3(currVert.x, currVert.y, currVert.z) * scale + meshPos;
+            xVals.push_back(transVert.x);
+            yVals.push_back(transVert.y);
+            zVals.push_back(transVert.z);
+
+            verts.push_back(transVert);
 
             aiVector3D currNorm = currMesh->mNormals[v];
             normals.push_back(glm::vec3(currNorm.x, currNorm.y, currNorm.z));
@@ -64,6 +72,24 @@ Mesh::Mesh(std::string path, glm::vec3 meshPos, float scale, Material mat) {
                 std::make_shared<Triangle>(triPoints, objMat, faceNorm));
         }
     }
+
+    // make bounding box
+    glm::vec3 maxCoord;
+    maxCoord.x = *std::max_element(xVals.begin(), xVals.end());
+    maxCoord.y = *std::max_element(yVals.begin(), yVals.end());
+    maxCoord.z = *std::max_element(zVals.begin(), zVals.end());
+
+    glm::vec3 minCoord;
+    minCoord.x = *std::min_element(xVals.begin(), xVals.end());
+    minCoord.y = *std::min_element(yVals.begin(), yVals.end());
+    minCoord.z = *std::min_element(zVals.begin(), zVals.end());
+
+    std::cout << "Min: " << minCoord.x << " " << minCoord.y << " " << minCoord.z
+              << std::endl;
+    std::cout << "Max: " << maxCoord.x << " " << maxCoord.y << " " << maxCoord.z
+              << std::endl;
+
+    bb = std::make_shared<BoundingBox>(minCoord, maxCoord);
 }
 
 Mesh::~Mesh() {}
@@ -71,6 +97,10 @@ Mesh::~Mesh() {}
 bool Mesh::testIntersection(HitData &data) {
     HitData retData(data.getRayOrig(), data.getRayDir());
     retData.setObjDistSq(INFINITY);
+
+    if (!bb->testIntersection(retData)) {
+        return false;
+    }
 
     bool triFound = false;
 

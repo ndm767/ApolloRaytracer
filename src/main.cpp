@@ -67,6 +67,10 @@ int main(int argc, char *argv[]) {
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
     s.setIBL("assets/hdr/studio.hdr");
 
+    int newCam = s.addCamera(std::make_shared<PerspCamera>(
+        width, height, glm::vec3(0, 0, 6), glm::vec3(0, 0, -1), 60.0f));
+    s.setActiveCamera(newCam);
+
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
     Material green(glm::vec3(0, 1, 0), glm::vec3(0.5f), 10);
@@ -80,7 +84,7 @@ int main(int argc, char *argv[]) {
     // grey));
     // s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f,
     // green));
-    s.addObject(std::make_shared<Mesh>("assets/models/bun_zipper_res4.ply",
+    s.addObject(std::make_shared<Mesh>("assets/models/bun_zipper_res2.ply",
                                        glm::vec3(0, -1, 3), 10.0f, red));
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));

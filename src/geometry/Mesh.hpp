@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BoundingBox.hpp"
 #include "Triangle.hpp"
 
 #include <memory>
@@ -15,4 +16,5 @@ class Mesh : public Object {
 
   protected:
     std::vector<std::shared_ptr<Triangle>> tris;
+    std::shared_ptr<BoundingBox> bb;
 };

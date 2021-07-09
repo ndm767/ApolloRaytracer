@@ -2,6 +2,7 @@
 #include "../Ray.hpp"
 
 #include <glm/gtx/rotate_vector.hpp>
+#include <iostream>
 
 PerspCamera::PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
                          glm::vec3 direction, float horizFOV) {
@@ -34,9 +35,14 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
 
     // rotate lookDir to align with the original direction
     float angle = acos(glm::dot(glm::vec3(0, 0, 1), origDir));
-    if (angle != 0) {
+
+    const float pi = acos(glm::dot(glm::vec3(0, 0, 1), glm::vec3(0, 0, -1)));
+
+    if (angle != 0 && angle != pi) {
         glm::vec3 axis = glm::cross(glm::vec3(0, 0, 1), origDir);
         lookDir = glm::rotate(lookDir, angle, axis);
+    } else if (angle == pi) {
+        lookDir.z *= -1.0f;
     }
 
     // rotate lookDir to point towards where we actually want to look
