@@ -6,11 +6,14 @@
 #include "light/Light.hpp"
 
 int main(int argc, char *argv[]) {
-    Display *output = new SDLDisplay(400, 400);
 
-    Camera *cam = new PerspCamera(400, 400, glm::vec3(0, 1, 0),
-                                  glm::vec3(0, 0, 1), 60.0f);
-    Scene s(400, 400, glm::vec3(1, 1, 1), 0.1f);
+    int width = 400;
+    int height = 400;
+
+    Display *output = new SDLDisplay(width, height);
+
+    Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
+    output->setActiveCamera(s.getActiveCamera());
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
@@ -27,18 +30,27 @@ int main(int argc, char *argv[]) {
     s.addLight(std::make_shared<Light>(glm::vec3(0, 2, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 2), 0.5f));
 
-    for (int x = 0; x < 400; x++) {
-        for (int y = 0; y < 400; y++) {
-            Ray r = cam->getRayAtPixel(x, y);
-            output->drawPixel(x, y, r.traceRay(s));
-        }
-    }
+    bool shouldUpdate = true;
+    int res = 5;
 
     while (!output->isFinished()) {
-        output->flush();
+        if (shouldUpdate) {
+            for (int x = 0; x < width; x += res) {
+                for (int y = 0; y < height; y += res) {
+                    Ray r = s.getActiveCamera().get()->getRayAtPixel(x, y);
+                    for (int i = 0; i < res; i++) {
+                        for (int j = 0; j < res; j++) {
+                            output->drawPixel(x + i, y + j, r.traceRay(s));
+                        }
+                    }
+                }
+            }
+            shouldUpdate = false;
+        }
+
+        output->flush(&shouldUpdate);
     }
 
-    delete cam;
     delete output;
     return 0;
 }

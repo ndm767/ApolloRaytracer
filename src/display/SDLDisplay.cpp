@@ -33,7 +33,7 @@ void SDLDisplay::drawPixel(unsigned x, unsigned y, glm::vec3 color) {
     }
 }
 
-void SDLDisplay::flush() {
+void SDLDisplay::flush(bool *shouldUpdate) {
     SDL_SetRenderDrawColor(rRenderer, 0, 0, 0, 255);
     SDL_RenderClear(rRenderer);
 
@@ -48,13 +48,60 @@ void SDLDisplay::flush() {
 
     SDL_RenderPresent(rRenderer);
 
+    float speed = 0.25f;
+    float rotSpeed = 5.0f;
+
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             finished = true;
         } else if (e.type == SDL_KEYDOWN) {
-            if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            *shouldUpdate = true;
+            glm::vec3 perpDir;
+            switch (e.key.keysym.scancode) {
+            case SDL_SCANCODE_ESCAPE:
                 finished = true;
+                break;
+            case SDL_SCANCODE_Q:
+                activeCamera.get()->translate(glm::vec3(0, -speed, 0));
+                break;
+            case SDL_SCANCODE_E:
+                activeCamera.get()->translate(glm::vec3(0, speed, 0));
+                break;
+            case SDL_SCANCODE_UP:
+                activeCamera.get()->rotate(-rotSpeed, 0.0f);
+                break;
+            case SDL_SCANCODE_DOWN:
+                activeCamera.get()->rotate(rotSpeed, 0.0f);
+                break;
+            case SDL_SCANCODE_LEFT:
+                activeCamera.get()->rotate(0.0f, -rotSpeed);
+                break;
+            case SDL_SCANCODE_RIGHT:
+                activeCamera.get()->rotate(0.0f, rotSpeed);
+                break;
+            case SDL_SCANCODE_W:
+                activeCamera.get()->translate(speed *
+                                              activeCamera.get()->getDir());
+                break;
+            case SDL_SCANCODE_S:
+                activeCamera.get()->translate(-speed *
+                                              activeCamera.get()->getDir());
+                break;
+            case SDL_SCANCODE_A:
+                perpDir = glm::cross(activeCamera.get()->getDir(),
+                                     glm::vec3(0, 1, 0));
+                perpDir = glm::normalize(perpDir);
+                activeCamera.get()->translate(speed * perpDir);
+                break;
+            case SDL_SCANCODE_D:
+                perpDir = glm::cross(activeCamera.get()->getDir(),
+                                     glm::vec3(0, 1, 0));
+                perpDir = glm::normalize(perpDir);
+                activeCamera.get()->translate(-speed * perpDir);
+                break;
+            default:
+                break;
             }
         }
     }

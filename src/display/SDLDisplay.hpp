@@ -12,7 +12,7 @@ class SDLDisplay : public Display {
     ~SDLDisplay();
 
     void drawPixel(unsigned x, unsigned y, glm::vec3 color) override;
-    void flush() override;
+    void flush(bool *shouldUpdate) override;
 
     glm::vec3 getPixel(unsigned x, unsigned y) override;
 
