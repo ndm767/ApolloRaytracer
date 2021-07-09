@@ -5,36 +5,43 @@
 #include "geometry/Sphere.hpp"
 #include "light/Light.hpp"
 
+// handles events for when the display is an SDLDisplay
 void handleEvents(Display *d, std::shared_ptr<Camera> activeCamera,
                   bool *shouldUpdate) {
     *shouldUpdate = true;
     float speed = 0.25f;
     float rotSpeed = 5.0f;
 
+    // vertical movement
     if (d->getEventDown(SDL_SCANCODE_Q)) {
         activeCamera.get()->translate(glm::vec3(0, -speed, 0));
     }
     if (d->getEventDown(SDL_SCANCODE_E)) {
         activeCamera.get()->translate(glm::vec3(0, speed, 0));
     }
+    // vertical rotation
     if (d->getEventDown(SDL_SCANCODE_UP)) {
         activeCamera.get()->rotate(-rotSpeed, 0.0f);
     }
     if (d->getEventDown(SDL_SCANCODE_DOWN)) {
         activeCamera.get()->rotate(rotSpeed, 0.0f);
     }
+    // horizontal rotation
     if (d->getEventDown(SDL_SCANCODE_LEFT)) {
         activeCamera.get()->rotate(0.0f, -rotSpeed);
     }
     if (d->getEventDown(SDL_SCANCODE_RIGHT)) {
         activeCamera.get()->rotate(0.0f, rotSpeed);
     }
+    // forward and backward movement
     if (d->getEventDown(SDL_SCANCODE_W)) {
         activeCamera.get()->translate(speed * activeCamera.get()->getDir());
     }
     if (d->getEventDown(SDL_SCANCODE_S)) {
         activeCamera.get()->translate(-speed * activeCamera.get()->getDir());
     }
+    // left and right movement (works by getting the perpendicular vector to
+    // where the camera is facing)
     if (d->getEventDown(SDL_SCANCODE_A)) {
         glm::vec3 perpDir =
             glm::cross(activeCamera.get()->getDir(), glm::vec3(0, 1, 0));
