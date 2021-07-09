@@ -2,8 +2,8 @@
 #include "Scene.hpp"
 #include "camera/PerspCamera.hpp"
 #include "display/SDLDisplay.hpp"
+#include "geometry/Mesh.hpp"
 #include "geometry/Sphere.hpp"
-#include "geometry/Triangle.hpp"
 #include "light/Light.hpp"
 
 // handles events for when the display is an SDLDisplay
@@ -75,19 +75,19 @@ int main(int argc, char *argv[]) {
     grey.setUseReflection(true);
     grey.setReflectionCoef(0.25f);
 
-    s.addObject(std::make_shared<Sphere>(glm::vec3(0, 0, 5), 1.0f, red));
-    s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f, grey));
-    s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
-
-    glm::vec3 points[] = {glm::vec3(0, 0, 5), glm::vec3(0, 3, 5),
-                          glm::vec3(3, 3, 5)};
-    s.addObject(std::make_shared<Triangle>(points, green));
+    // s.addObject(std::make_shared<Sphere>(glm::vec3(0, 0, 5), 1.0f, red));
+    // s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f,
+    // grey));
+    // s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f,
+    // green));
+    s.addObject(std::make_shared<Mesh>("assets/models/teapot.obj",
+                                       glm::vec3(0, 0, 3), 0.25f, green));
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 2, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 2, 2), 0.5f));
 
     bool shouldUpdate = true;
-    int res = 1;
+    int res = 5;
 
     while (!output->isFinished()) {
         if (shouldUpdate) {
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
             shouldUpdate = false;
         }
 
-        output->flush(&shouldUpdate);
+        output->flush();
         handleEvents(output, s.getActiveCamera(), &shouldUpdate);
     }
 

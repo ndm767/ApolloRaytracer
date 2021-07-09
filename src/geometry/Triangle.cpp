@@ -2,7 +2,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-Triangle::Triangle(glm::vec3 points[3], Material mat) {
+Triangle::Triangle(glm::vec3 points[3], Material mat, glm::vec3 triNorm) {
     p[0] = points[0];
     p[1] = points[1];
     p[2] = points[2];
@@ -10,8 +10,12 @@ Triangle::Triangle(glm::vec3 points[3], Material mat) {
     // get the average of the vertices to find the position
     pos = (p[0] + p[1] + p[2]) / 3.0f;
 
-    norm = glm::cross(p[1] - p[0], p[2] - p[0]);
-    norm = glm::normalize(norm);
+    if (triNorm == glm::vec3(0.0f, 0.0f, 0.0f)) {
+        norm = glm::cross(p[1] - p[0], p[2] - p[0]);
+        norm = glm::normalize(norm);
+    } else {
+        norm = triNorm;
+    }
 
     objMat = mat;
 }

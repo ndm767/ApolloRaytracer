@@ -56,7 +56,7 @@ void SDLDisplay::cleanKeys() {
     }
 }
 
-void SDLDisplay::flush(bool *shouldUpdate) {
+void SDLDisplay::flush() {
     SDL_SetRenderDrawColor(rRenderer, 0, 0, 0, 255);
     SDL_RenderClear(rRenderer);
 
@@ -76,7 +76,6 @@ void SDLDisplay::flush(bool *shouldUpdate) {
         if (e.type == SDL_QUIT) {
             finished = true;
         } else if (e.type == SDL_KEYDOWN) {
-            *shouldUpdate = true;
             if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 finished = true;
             }
