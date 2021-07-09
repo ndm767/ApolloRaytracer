@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 
     FileLoader fl;
     fl.loadFile("assets/models/bun_zipper_res4.ply", s, glm::vec3(0, -1.334, 3),
-                10.0f);
+                10.0f, &red);
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));

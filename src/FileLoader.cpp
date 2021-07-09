@@ -11,7 +11,7 @@ FileLoader::FileLoader() {}
 FileLoader::~FileLoader() {}
 
 void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
-                          float scale) {
+                          float scale, Material *mat) {
     Assimp::Importer imp;
     const aiScene *scene = imp.ReadFile(
         path.c_str(),
@@ -56,10 +56,15 @@ void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
         mi.indices = indices;
         mi.normals = normals;
 
-        Material temp(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
+        Material temp(glm::vec3(0.5f), glm::vec3(0.5f), 100);
         temp.setUseReflection(true);
         temp.setReflectionCoef(0.5f);
 
-        targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale, temp));
+        Material matToUse = temp;
+        if (mat != nullptr) {
+            matToUse = *mat;
+        }
+
+        targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale, matToUse));
     }
 }
