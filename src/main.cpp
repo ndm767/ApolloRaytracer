@@ -5,6 +5,50 @@
 #include "geometry/Sphere.hpp"
 #include "light/Light.hpp"
 
+void handleEvents(Display *d, std::shared_ptr<Camera> activeCamera,
+                  bool *shouldUpdate) {
+    *shouldUpdate = true;
+    float speed = 0.25f;
+    float rotSpeed = 5.0f;
+
+    if (d->getEventDown(SDL_SCANCODE_Q)) {
+        activeCamera.get()->translate(glm::vec3(0, -speed, 0));
+    }
+    if (d->getEventDown(SDL_SCANCODE_E)) {
+        activeCamera.get()->translate(glm::vec3(0, speed, 0));
+    }
+    if (d->getEventDown(SDL_SCANCODE_UP)) {
+        activeCamera.get()->rotate(-rotSpeed, 0.0f);
+    }
+    if (d->getEventDown(SDL_SCANCODE_DOWN)) {
+        activeCamera.get()->rotate(rotSpeed, 0.0f);
+    }
+    if (d->getEventDown(SDL_SCANCODE_LEFT)) {
+        activeCamera.get()->rotate(0.0f, -rotSpeed);
+    }
+    if (d->getEventDown(SDL_SCANCODE_RIGHT)) {
+        activeCamera.get()->rotate(0.0f, rotSpeed);
+    }
+    if (d->getEventDown(SDL_SCANCODE_W)) {
+        activeCamera.get()->translate(speed * activeCamera.get()->getDir());
+    }
+    if (d->getEventDown(SDL_SCANCODE_S)) {
+        activeCamera.get()->translate(-speed * activeCamera.get()->getDir());
+    }
+    if (d->getEventDown(SDL_SCANCODE_A)) {
+        glm::vec3 perpDir =
+            glm::cross(activeCamera.get()->getDir(), glm::vec3(0, 1, 0));
+        perpDir = glm::normalize(perpDir);
+        activeCamera.get()->translate(speed * perpDir);
+    }
+    if (d->getEventDown(SDL_SCANCODE_D)) {
+        glm::vec3 perpDir =
+            glm::cross(activeCamera.get()->getDir(), glm::vec3(0, 1, 0));
+        perpDir = glm::normalize(perpDir);
+        activeCamera.get()->translate(-speed * perpDir);
+    }
+}
+
 int main(int argc, char *argv[]) {
 
     int width = 400;
@@ -14,7 +58,6 @@ int main(int argc, char *argv[]) {
 
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
     s.setIBL("assets/hdr/studio.hdr");
-    output->setActiveCamera(s.getActiveCamera());
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
@@ -50,6 +93,7 @@ int main(int argc, char *argv[]) {
         }
 
         output->flush(&shouldUpdate);
+        handleEvents(output, s.getActiveCamera(), &shouldUpdate);
     }
 
     delete output;

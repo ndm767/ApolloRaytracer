@@ -1,10 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <memory>
 #include <vector>
-
-#include "../camera/Camera.hpp"
 
 // display parent class
 class Display {
@@ -17,14 +14,13 @@ class Display {
     // update the display/output image
     virtual void flush(bool *shouldUpdate) = 0;
 
-    // set camera being used for camera control
-    void setActiveCamera(std::shared_ptr<Camera> c) { activeCamera = c; }
-
     bool isFinished() { return finished; }
     virtual glm::vec3 getPixel(unsigned x, unsigned y) = 0;
+
+    // get keyboard (or other) events (pretty much only for SDL display)
+    virtual bool getEventDown(int event) = 0;
 
   protected:
     bool finished;
     std::vector<std::vector<glm::vec3>> pixels;
-    std::shared_ptr<Camera> activeCamera;
 };

@@ -1,5 +1,6 @@
 #include "SDLDisplay.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 SDLDisplay::SDLDisplay(unsigned width, unsigned height) {
@@ -33,6 +34,28 @@ void SDLDisplay::drawPixel(unsigned x, unsigned y, glm::vec3 color) {
     }
 }
 
+// detects if a key is in the keys down vector
+bool SDLDisplay::inVector(SDL_Scancode key) {
+    return std::find(keysDown.begin(), keysDown.end(), key) != keysDown.end();
+}
+
+// sets key as pressed
+void SDLDisplay::setKey(SDL_KeyboardEvent ke) {
+    if (!inVector(ke.keysym.scancode)) {
+        keysDown.push_back(ke.keysym.scancode);
+    }
+}
+
+// removes keys that are no longer pressed
+void SDLDisplay::cleanKeys() {
+    const Uint8 *keyState = SDL_GetKeyboardState(NULL);
+    for (auto k : keysDown) {
+        if (!keyState[k]) {
+            keysDown.erase(std::find(keysDown.begin(), keysDown.end(), k));
+        }
+    }
+}
+
 void SDLDisplay::flush(bool *shouldUpdate) {
     SDL_SetRenderDrawColor(rRenderer, 0, 0, 0, 255);
     SDL_RenderClear(rRenderer);
@@ -48,63 +71,20 @@ void SDLDisplay::flush(bool *shouldUpdate) {
 
     SDL_RenderPresent(rRenderer);
 
-    float speed = 0.25f;
-    float rotSpeed = 5.0f;
-
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             finished = true;
         } else if (e.type == SDL_KEYDOWN) {
-            *shouldUpdate = true;
-            glm::vec3 perpDir;
-            switch (e.key.keysym.scancode) {
-            case SDL_SCANCODE_ESCAPE:
+            if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 finished = true;
-                break;
-            case SDL_SCANCODE_Q:
-                activeCamera.get()->translate(glm::vec3(0, -speed, 0));
-                break;
-            case SDL_SCANCODE_E:
-                activeCamera.get()->translate(glm::vec3(0, speed, 0));
-                break;
-            case SDL_SCANCODE_UP:
-                activeCamera.get()->rotate(-rotSpeed, 0.0f);
-                break;
-            case SDL_SCANCODE_DOWN:
-                activeCamera.get()->rotate(rotSpeed, 0.0f);
-                break;
-            case SDL_SCANCODE_LEFT:
-                activeCamera.get()->rotate(0.0f, -rotSpeed);
-                break;
-            case SDL_SCANCODE_RIGHT:
-                activeCamera.get()->rotate(0.0f, rotSpeed);
-                break;
-            case SDL_SCANCODE_W:
-                activeCamera.get()->translate(speed *
-                                              activeCamera.get()->getDir());
-                break;
-            case SDL_SCANCODE_S:
-                activeCamera.get()->translate(-speed *
-                                              activeCamera.get()->getDir());
-                break;
-            case SDL_SCANCODE_A:
-                perpDir = glm::cross(activeCamera.get()->getDir(),
-                                     glm::vec3(0, 1, 0));
-                perpDir = glm::normalize(perpDir);
-                activeCamera.get()->translate(speed * perpDir);
-                break;
-            case SDL_SCANCODE_D:
-                perpDir = glm::cross(activeCamera.get()->getDir(),
-                                     glm::vec3(0, 1, 0));
-                perpDir = glm::normalize(perpDir);
-                activeCamera.get()->translate(-speed * perpDir);
-                break;
-            default:
-                break;
             }
+
+            setKey(e.key);
         }
     }
+
+    cleanKeys();
 }
 
 glm::vec3 SDLDisplay::getPixel(unsigned x, unsigned y) {
@@ -112,4 +92,9 @@ glm::vec3 SDLDisplay::getPixel(unsigned x, unsigned y) {
         return pixels.at(x).at(y);
     }
     return glm::vec3(0, 0, 0);
+}
+
+bool SDLDisplay::getEventDown(int event) {
+    SDL_Scancode key = (SDL_Scancode)event;
+    return inVector(key);
 }
