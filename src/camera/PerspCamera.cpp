@@ -32,14 +32,10 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
     lookDir.x = -1 * sin(hFOV) + x * (2 * sin(hFOV) / width);
     lookDir.y = sin(vFOV) - y * (2 * sin(vFOV) / height);
 
-    glm::vec3 rotDir = origDir;
-    rotDir = glm::rotate(rotDir, glm::radians(pitch), glm::vec3(1, 0, 0));
-    rotDir = glm::rotate(rotDir, glm::radians(yaw), glm::vec3(0, 1, 0));
-
     // rotate lookPos to point towards where we actually want to look
-    float angle = acos(glm::dot(glm::vec3(0, 0, 1), rotDir));
+    float angle = acos(glm::dot(glm::vec3(0, 0, 1), dir));
     if (angle != 0) {
-        glm::vec3 axis = glm::cross(glm::vec3(0, 0, 1), rotDir);
+        glm::vec3 axis = glm::cross(glm::vec3(0, 0, 1), dir);
         lookDir = glm::rotate(lookDir, angle, axis);
     }
 
@@ -54,16 +50,19 @@ void PerspCamera::translate(glm::vec3 delta) { pos += delta; }
 // rotate camera by certain number of degrees
 void PerspCamera::rotate(float deltaPitch, float deltaYaw) {
 
-    pitch += deltaPitch;
-    yaw += deltaYaw;
+    pitch += glm::radians(deltaPitch);
+    yaw += glm::radians(deltaYaw);
 
     dir = origDir;
-    dir = glm::rotate(dir, glm::radians(pitch), glm::vec3(1, 0, 0));
-    dir = glm::rotate(dir, glm::radians(yaw), glm::vec3(0, 1, 0));
+    dir = glm::rotate(dir, pitch, glm::vec3(1, 0, 0));
+    dir = glm::rotate(dir, yaw, glm::vec3(0, 1, 0));
 
-    if (pitch > 60.0f) {
-        pitch = 60.0f;
-    } else if (pitch < -60.0f) {
-        pitch = -60.0f;
+    constexpr float pi = 3.14159f;
+
+    // limit pitch to 45 degrees in each direction
+    if (pitch > pi / 4.0f) {
+        pitch = pi / 4.0f;
+    } else if (pitch < -pi / 4.0f) {
+        pitch = -pi / 4.0f;
     }
 }
