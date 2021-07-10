@@ -1,7 +1,6 @@
 #include "Triangle.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 
 Triangle::Triangle(glm::vec3 points[3], Material mat, glm::vec3 triNorm) {
     p[0] = points[0];

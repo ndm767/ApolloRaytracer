@@ -4,12 +4,10 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include <algorithm>
 #include <iostream>
 
 Mesh::Mesh(MeshInput vals, glm::vec3 meshPos, float scale, Material mat) {
     objMat = mat;
-    pos = glm::vec3(0);
 
     for (unsigned i = 0; i < vals.indices.size(); i += 3) {
         glm::vec3 points[3] = {vals.vertices.at(vals.indices.at(i)),
@@ -70,56 +68,13 @@ bool Mesh::testIntersection(HitData &data) {
     }
 
     bool triFound = false;
-    // sort triangles by how close they are to a projected hit position
-    glm::vec3 dirToMesh = pos - data.getRayOrig();
-    glm::vec3 step = dirToMesh / glm::normalize(dirToMesh);
-    float coefToMesh = std::max(step.x, std::max(step.y, step.z));
-    glm::vec3 projectedHit = data.getRayOrig() + data.getRayDir() * coefToMesh;
 
-    struct TriDat {
-        glm::vec3 p[3];
-        float closestDistSq;
-        std::shared_ptr<Triangle> ptr;
-    };
-
-    auto getCDS = [](glm::vec3 &hit, TriDat &dat) {
-        float dist1 = std::pow(hit.x - dat.p[0].x, 2) +
-                      std::pow(hit.y - dat.p[0].y, 2) +
-                      std::pow(hit.z - dat.p[0].z, 2);
-
-        float dist2 = std::pow(hit.x - dat.p[1].x, 2) +
-                      std::pow(hit.y - dat.p[1].y, 2) +
-                      std::pow(hit.z - dat.p[1].z, 2);
-
-        float dist3 = std::pow(hit.x - dat.p[2].x, 2) +
-                      std::pow(hit.y - dat.p[2].y, 2) +
-                      std::pow(hit.z - dat.p[2].z, 2);
-        return std::max(std::max(dist1, dist2), dist3);
-    };
-
-    std::vector<TriDat> trisCopy;
     for (auto t : tris) {
-        TriDat temp;
-        glm::vec3 *p = t.get()->getPoints();
-        temp.p[0] = *p;
-        temp.p[1] = *(p + 1);
-        temp.p[2] = *(p + 2);
-        temp.ptr = t;
-        temp.closestDistSq = getCDS(projectedHit, temp);
-        trisCopy.push_back(temp);
-    }
-
-    std::sort(trisCopy.begin(), trisCopy.end(), [](TriDat &a, TriDat &b) {
-        return a.closestDistSq < b.closestDistSq;
-    });
-
-    for (auto &t : trisCopy) {
         HitData tempData(data.getRayOrig(), data.getRayDir());
-        if (t.ptr->testIntersection(tempData)) {
+        if (t->testIntersection(tempData)) {
             triFound = true;
             if (tempData.getObjDistSq() < retData.getObjDistSq()) {
                 retData = tempData;
-                break;
             }
         }
     }
