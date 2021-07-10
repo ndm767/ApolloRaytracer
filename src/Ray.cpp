@@ -3,9 +3,11 @@
 
 #include <iostream>
 
-Ray::Ray(glm::vec3 origin, glm::vec3 direction, void *_skipObj) {
+Ray::Ray(glm::vec3 origin, glm::vec3 direction, int _maxDepth, void *_skipObj) {
     orig = origin;
     dir = glm::normalize(direction);
+
+    maxDepth = _maxDepth;
 
     skipObj = _skipObj;
 }
@@ -53,7 +55,7 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
 
         // we add a little bit of the normal to the hit position so we don't get
         // self-intersections
-        Ray shadowRay(hitPos + (hitNorm * 0.0001f), lightDir);
+        Ray shadowRay(hitPos + (hitNorm * 0.0001f), lightDir, maxDepth);
         float interDist = 0.0f;
         bool inter = shadowRay.isThereIntersection(s, &interDist);
 
@@ -83,21 +85,19 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
         }
     }
 
-    constexpr int MAX_DEPTH = 3;
-
     // reflections
-    if (depth < MAX_DEPTH && objMat->getUseReflection()) {
+    if (depth < maxDepth && objMat->getUseReflection()) {
         glm::vec3 oppViewDir = -1.0f * viewDir;
         glm::vec3 reflectDir =
             oppViewDir - 2.0f * glm::dot(oppViewDir, hitNorm) * hitNorm;
 
-        Ray reflectRay(hitPos + hitNorm * 0.01f, reflectDir);
+        Ray reflectRay(hitPos + hitNorm * 0.01f, reflectDir, maxDepth);
         retCol +=
             objMat->getReflectionCoef() * reflectRay.traceRay(s, depth + 1);
     }
 
     // refraction (its the algorithm from Whitted and Foley)
-    if (depth < MAX_DEPTH && objMat->getUseRefraction()) {
+    if (depth < maxDepth && objMat->getUseRefraction()) {
         if (glm::dot(viewDir, hitNorm) >= 0) {
             hitNorm *= -1.0f;
         }
@@ -109,7 +109,7 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
         kf = 1.0f / std::sqrt(kf);
 
         glm::vec3 refractDir = kf * (hitNorm + V) - hitNorm;
-        Ray refractRay(hitPos - hitNorm * 0.01f, -1.0f * refractDir,
+        Ray refractRay(hitPos - hitNorm * 0.01f, -1.0f * refractDir, maxDepth,
                        data.getHitObj());
         retCol +=
             objMat->getRefractionCoef() * refractRay.traceRay(s, depth + 1);

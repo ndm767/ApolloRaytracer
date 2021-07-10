@@ -6,7 +6,8 @@
 
 class Ray {
   public:
-    Ray(glm::vec3 origin, glm::vec3 direction, void *_skipObj = nullptr);
+    Ray(glm::vec3 origin, glm::vec3 direction, int _maxDepth,
+        void *_skipObj = nullptr);
     ~Ray();
 
     glm::vec3 traceRay(Scene &s, int depth = 0);
@@ -25,6 +26,8 @@ class Ray {
 
     glm::vec3 orig;
     glm::vec3 dir;
+
+    int maxDepth;
 
     void *skipObj;
 };

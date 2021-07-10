@@ -80,7 +80,7 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
         perpDir = glm::normalize(glm::cross(glm::vec3(0, 0, 1), dir));
     }
 
-    Ray r(orig, lookDir);
+    Ray r(orig, lookDir, 3);
     return r;
 }
 
