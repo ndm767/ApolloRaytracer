@@ -12,6 +12,8 @@ PerspCamera::PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
     pos = position;
     origDir = glm::normalize(direction);
     dir = origDir;
+    perpDir = glm::cross(dir, glm::vec3(0, 1, 0));
+    perpDir = glm::normalize(perpDir);
 
     // horizontal FOV
     hFOV = glm::radians(horizFOV);
@@ -42,15 +44,41 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
         glm::vec3 axis = glm::cross(glm::vec3(0, 0, 1), origDir);
         lookDir = glm::rotate(lookDir, angle, axis);
     } else if (angle == pi) {
-        lookDir.z *= -1.0f;
+        // handle if camera is pointed in z direction
         lookDir.x *= -1.0f;
+        lookDir.z *= -1.0f;
     }
 
     // rotate lookDir to point towards where we actually want to look
-    lookDir = glm::rotate(lookDir, pitch, glm::vec3(1, 0, 0));
-    lookDir = glm::rotate(lookDir, yaw, glm::vec3(0, 1, 0));
+    glm::vec3 pitchAxis = glm::cross(glm::vec3(0, 1, 0), origDir);
+
+    // handle if camera is pointed in y direction
+    if (pitchAxis == glm::vec3(0, 0, 0)) {
+        pitchAxis = glm::vec3(1, 0, 0);
+    }
+
+    glm::vec3 yawAxis;
+    if (origDir.z < 0) {
+        yawAxis = glm::cross(glm::vec3(1, 0, 0), origDir);
+    } else {
+        yawAxis = glm::cross(glm::vec3(-1, 0, 0), origDir);
+    }
+    // handle if camera is pointed in x direction
+    if (yawAxis == glm::vec3(0, 0, 0)) {
+        yawAxis = glm::vec3(0, 1, 0);
+    }
+    lookDir = glm::rotate(lookDir, pitch, pitchAxis);
+    lookDir = glm::rotate(lookDir, yaw, yawAxis);
 
     lookDir = glm::normalize(lookDir);
+
+    if (origDir != glm::vec3(0, 1, 0) && origDir != glm::vec3(0, -1, 0)) {
+        perpDir = glm::normalize(glm::cross(glm::vec3(0, -1, 0), dir));
+    } else if (origDir == glm::vec3(0, -1, 0)) {
+        perpDir = glm::normalize(glm::cross(glm::vec3(0, 0, -1), dir));
+    } else {
+        perpDir = glm::normalize(glm::cross(glm::vec3(0, 0, 1), dir));
+    }
 
     Ray r(orig, lookDir);
     return r;
@@ -74,7 +102,23 @@ void PerspCamera::rotate(float deltaPitch, float deltaYaw) {
     }
 
     dir = origDir;
-    dir = glm::rotate(dir, pitch, glm::vec3(1, 0, 0));
-    dir = glm::rotate(dir, yaw, glm::vec3(0, 1, 0));
+
+    glm::vec3 pitchAxis = glm::cross(glm::vec3(0, 1, 0), origDir);
+    if (pitchAxis == glm::vec3(0, 0, 0)) {
+        pitchAxis = glm::vec3(1, 0, 0);
+    }
+
+    glm::vec3 yawAxis;
+    if (origDir.z < 0) {
+        yawAxis = glm::cross(glm::vec3(1, 0, 0), origDir);
+    } else {
+        yawAxis = glm::cross(glm::vec3(-1, 0, 0), origDir);
+    }
+    if (yawAxis == glm::vec3(0, 0, 0)) {
+        yawAxis = glm::vec3(0, 1, 0);
+    }
+
+    dir = glm::rotate(dir, pitch, pitchAxis);
+    dir = glm::rotate(dir, yaw, yawAxis);
     dir = glm::normalize(dir);
 }

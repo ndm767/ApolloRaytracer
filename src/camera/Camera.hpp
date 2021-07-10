@@ -20,12 +20,14 @@ class Camera {
     float getPitch() { return pitch; }
     float getYaw() { return yaw; }
     glm::vec3 getDir() { return dir; }
+    glm::vec3 getPerpDir() { return perpDir; }
 
   protected:
     int width, height;
     glm::vec3 pos;
     glm::vec3 origDir;
     glm::vec3 dir;
+    glm::vec3 perpDir;
 
     float pitch, yaw;
 };

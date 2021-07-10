@@ -53,17 +53,12 @@ void handleEvents(Display *d, std::shared_ptr<Camera> activeCamera,
     // where the camera is facing)
     if (d->getEventDown(SDL_SCANCODE_A)) {
         *shouldUpdate = true;
-        glm::vec3 perpDir =
-            glm::cross(activeCamera.get()->getDir(), glm::vec3(0, 1, 0));
-        perpDir = glm::normalize(perpDir);
-        activeCamera.get()->translate(speed * perpDir);
+        activeCamera.get()->translate(speed * activeCamera.get()->getPerpDir());
     }
     if (d->getEventDown(SDL_SCANCODE_D)) {
         *shouldUpdate = true;
-        glm::vec3 perpDir =
-            glm::cross(activeCamera.get()->getDir(), glm::vec3(0, 1, 0));
-        perpDir = glm::normalize(perpDir);
-        activeCamera.get()->translate(-speed * perpDir);
+        activeCamera.get()->translate(-speed *
+                                      activeCamera.get()->getPerpDir());
     }
 }
 
@@ -75,10 +70,12 @@ int main(int argc, char *argv[]) {
     Display *output = new SDLDisplay(width, height);
 
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
-    s.setIBL("assets/hdr/studio.hdr");
+    s.setIBL("assets/hdr/sunrise.hdr");
 
     int newCam = s.addCamera(std::make_shared<PerspCamera>(
-        width, height, glm::vec3(0, 0, 6), glm::vec3(0, 0, -1), 60.0f));
+        width, height, glm::vec3(6, 0, 6), glm::vec3(-0.5f, 0, -0.5f), 60.0f));
+    // int newCam = s.addCamera(std::make_shared<PerspCamera>(
+    //    width, height, glm::vec3(0, 6, 0), glm::vec3(0, -1, 0), 60.0f));
     s.setActiveCamera(newCam);
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
@@ -93,8 +90,9 @@ int main(int argc, char *argv[]) {
     s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
 
     FileLoader fl;
-    fl.loadFile("assets/models/bun_zipper_res4.ply", s, glm::vec3(0, -1.334, 3),
-                10.0f, &red);
+    // fl.loadFile("assets/models/cow.obj", s, glm::vec3(0, 0, 3), 0.25f, &red);
+    // fl.loadFile("assets/models/bun_zipper_res4.ply", s,
+    //            glm::vec3(-2, -1.334, 3), 10.0f, &grey);
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));
@@ -123,6 +121,13 @@ int main(int argc, char *argv[]) {
 
         output->flush();
         handleEvents(output, s.getActiveCamera(), &shouldUpdate);
+        if (output->getEventDown(SDL_SCANCODE_SPACE)) {
+            shouldUpdate = true;
+            s.setActiveCamera(1);
+        } else if (output->getEventDown(SDL_SCANCODE_LCTRL)) {
+            shouldUpdate = true;
+            s.setActiveCamera(0);
+        }
     }
 
     delete output;
