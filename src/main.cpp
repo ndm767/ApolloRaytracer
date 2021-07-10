@@ -90,9 +90,9 @@ int main(int argc, char *argv[]) {
     s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
 
     FileLoader fl;
-    // fl.loadFile("assets/models/cow.obj", s, glm::vec3(0, 0, 3), 0.25f, &red);
-    // fl.loadFile("assets/models/bun_zipper_res4.ply", s,
-    //            glm::vec3(-2, -1.334, 3), 10.0f, &grey);
+    fl.loadFile("assets/models/cow.obj", s, glm::vec3(0, 0, 3), 0.25f, &red);
+    fl.loadFile("assets/models/bun_zipper_res4.ply", s,
+                glm::vec3(-2, -1.334, 3), 10.0f, &grey);
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));
