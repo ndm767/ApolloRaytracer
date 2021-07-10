@@ -97,20 +97,14 @@ void drawPixels(Display *output, Scene *s, int width, int height, int res) {
 
 int main(int argc, char *argv[]) {
 
-    int width = 100;
-    int height = 50;
+    int width = 400;
+    int height = 400;
 
-    // Display *output = new SDLDisplay(width, height);
-    Display *output = new ASCIIDisplay(width, height);
+    Display *output = new SDLDisplay(width, height);
+    // Display *output = new ASCIIDisplay(width, height);
 
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
-    // s.setIBL("assets/hdr/sunrise.hdr");
-
-    int newCam = s.addCamera(std::make_shared<PerspCamera>(
-        width, height, glm::vec3(6, 0, 0), glm::vec3(-1, 0, 0), 60.0f));
-    // int newCam = s.addCamera(std::make_shared<PerspCamera>(
-    //    width, height, glm::vec3(0, 6, 0), glm::vec3(0, -1, 0), 60.0f));
-    s.setActiveCamera(newCam);
+    s.setIBL("assets/hdr/sunrise.hdr");
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
@@ -145,13 +139,6 @@ int main(int argc, char *argv[]) {
 
         output->flush();
         handleEvents(output, s.getActiveCamera(), &shouldUpdate);
-        if (output->getEventDown(SDL_SCANCODE_SPACE)) {
-            shouldUpdate = true;
-            s.setActiveCamera(1);
-        } else if (output->getEventDown(SDL_SCANCODE_LCTRL)) {
-            shouldUpdate = true;
-            s.setActiveCamera(0);
-        }
     }
 
     delete output;
