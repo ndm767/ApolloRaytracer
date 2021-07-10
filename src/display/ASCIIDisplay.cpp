@@ -30,9 +30,10 @@ void ASCIIDisplay::flush() {
         for (auto x : y) {
             float val = x.r + x.g + x.b;
             val /= 3.0f;
-            val *= 9.0f;
+            val *= 69.0f;
 
-            int valIndex = int(val);
+            // convert white->black scale to black->white
+            int valIndex = int(69.0f - val);
 
             std::cout << values.at(valIndex);
         }

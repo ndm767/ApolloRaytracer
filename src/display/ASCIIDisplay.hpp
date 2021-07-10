@@ -17,5 +17,6 @@ class ASCIIDisplay : public Display {
     bool getEventDown(int event) override;
 
   protected:
-    std::string values = " .:-=+*#%@";
+    std::string values = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/"
+                         "\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ";
 };

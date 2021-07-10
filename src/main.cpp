@@ -97,8 +97,8 @@ void drawPixels(Display *output, Scene *s, int width, int height, int res) {
 
 int main(int argc, char *argv[]) {
 
-    int width = 200;
-    int height = 200;
+    int width = 100;
+    int height = 50;
 
     // Display *output = new SDLDisplay(width, height);
     Display *output = new ASCIIDisplay(width, height);
