@@ -5,6 +5,8 @@
 #include "display/SDLDisplay.hpp"
 #include "geometry/Sphere.hpp"
 #include "light/Light.hpp"
+
+#include <future>
 #include <iostream>
 
 // handles events for when the display is an SDLDisplay
@@ -62,6 +64,36 @@ void handleEvents(Display *d, std::shared_ptr<Camera> activeCamera,
     }
 }
 
+// traces rays one column at a time
+void drawColumn(Display *output, Camera *c, Scene *s, int x, int height,
+                int res) {
+    for (int y = 0; y < height; y += res) {
+        Ray r = c->getRayAtPixel(x, y);
+        glm::vec3 result = r.traceRay(*s);
+        for (int i = 0; i < res; i++) {
+            for (int j = 0; j < res; j++) {
+                output->drawPixel(x + i, y + j, result);
+            }
+        }
+    }
+}
+
+// traces all the rays and draws the pixels
+void drawPixels(Display *output, Scene *s, int width, int height, int res) {
+    Camera *currCam = s->getActiveCamera().get();
+    std::vector<std::future<void>> threads;
+
+    // makes each column of pixels its own thread
+    for (int x = 0; x < width; x += res) {
+        threads.push_back(
+            std::async(drawColumn, output, currCam, s, x, height, res));
+    }
+
+    for (auto &t : threads) {
+        t.wait();
+    }
+}
+
 int main(int argc, char *argv[]) {
 
     int width = 400;
@@ -73,10 +105,10 @@ int main(int argc, char *argv[]) {
     s.setIBL("assets/hdr/sunrise.hdr");
 
     int newCam = s.addCamera(std::make_shared<PerspCamera>(
-        width, height, glm::vec3(6, 0, 6), glm::vec3(-0.5f, 0, -0.5f), 60.0f));
+        width, height, glm::vec3(6, 0, 0), glm::vec3(-1, 0, 0), 60.0f));
     // int newCam = s.addCamera(std::make_shared<PerspCamera>(
     //    width, height, glm::vec3(0, 6, 0), glm::vec3(0, -1, 0), 60.0f));
-    s.setActiveCamera(newCam);
+    // s.setActiveCamera(newCam);
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
@@ -103,17 +135,7 @@ int main(int argc, char *argv[]) {
     while (!output->isFinished()) {
         if (shouldUpdate) {
             Uint32 sTime = SDL_GetTicks();
-            Camera *currCam = s.getActiveCamera().get();
-            for (int x = 0; x < width; x += res) {
-                for (int y = 0; y < height; y += res) {
-                    Ray r = currCam->getRayAtPixel(x, y);
-                    for (int i = 0; i < res; i++) {
-                        for (int j = 0; j < res; j++) {
-                            output->drawPixel(x + i, y + j, r.traceRay(s));
-                        }
-                    }
-                }
-            }
+            drawPixels(output, &s, width, height, res);
             Uint32 eTime = SDL_GetTicks();
             std::cout << "Frame time: " << eTime - sTime << std::endl;
             shouldUpdate = false;

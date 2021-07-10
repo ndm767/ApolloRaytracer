@@ -10,7 +10,7 @@ POBJS := $(PCXXSRC:.cpp=.o)
 
 CXXFLAGS += -std=c++17 -O3
 
-LDLIBS += -lSDL2 -lassimp
+LDLIBS += -lSDL2 -lassimp -pthread
 
 .SILENT: all $(POBJS)
 .PHONY: all
