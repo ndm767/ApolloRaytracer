@@ -51,6 +51,7 @@ bool Sphere::testIntersection(HitData &data) {
             data.setHitNormal(hitNorm);
             data.setHitPos(hitPos);
             data.setObjDistSq(distSq);
+            data.setHitObj((void *)this);
             return true;
         } else {
             return false;

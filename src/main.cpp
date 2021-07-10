@@ -108,19 +108,23 @@ int main(int argc, char *argv[]) {
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
-    Material green(glm::vec3(0, 1, 0), glm::vec3(0.5f), 10);
+    Material glass(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f), 100);
     red.setUseReflection(true);
     red.setReflectionCoef(0.5f);
     grey.setUseReflection(true);
     grey.setReflectionCoef(0.25f);
 
+    glass.setUseRefraction(true);
+    glass.setIndexOfRefraction(1.52f);
+    glass.setRefractionCoef(0.99f);
+
     s.addObject(std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f, grey));
-    s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, green));
+    s.addObject(std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, grey));
 
     FileLoader fl;
     fl.loadFile("assets/models/cow.obj", s, glm::vec3(0, 0, 3), 0.25f, &red);
     fl.loadFile("assets/models/bun_zipper_res4.ply", s,
-                glm::vec3(-2, -1.334, 3), 10.0f, &grey);
+                glm::vec3(-2, -1.334, 3), 10.0f, &glass);
 
     s.addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));

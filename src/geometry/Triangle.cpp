@@ -86,5 +86,6 @@ bool Triangle::testIntersection(HitData &data) {
     data.setHitNormal(norm);
     data.setHitPos(hitPos);
     data.setObjDistSq(distSq);
+    data.setHitObj((void *)this);
     return true;
 }
