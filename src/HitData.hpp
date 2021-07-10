@@ -22,10 +22,14 @@ class HitData {
 
     float getObjDistSq() { return objDistSq; }
 
+    void *getHitObj() { return hitObj; }
+
     void setHitPos(glm::vec3 pos) { hitPos = pos; }
     void setHitNormal(glm::vec3 norm) { hitNormal = norm; }
     void setObjDistSq(float distSq) { objDistSq = distSq; }
     void setHitMat(Material *mat) { hitMat = mat; }
+
+    void setHitObj(void *obj) { hitObj = obj; }
 
   protected:
     glm::vec3 rayOrig;
@@ -34,4 +38,5 @@ class HitData {
     glm::vec3 hitNormal;
     float objDistSq;
     Material *hitMat;
+    void *hitObj;
 };

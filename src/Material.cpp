@@ -8,6 +8,7 @@ Material::Material(glm::vec3 diff, glm::vec3 spec, float exp) {
     phongExponent = exp;
 
     useReflection = false;
+    useRefraction = false;
 }
 
 Material::~Material() {}

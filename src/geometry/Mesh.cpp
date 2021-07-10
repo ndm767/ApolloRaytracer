@@ -81,6 +81,7 @@ bool Mesh::testIntersection(HitData &data) {
 
     if (triFound) {
         data = retData;
+        data.setHitObj((void *)this);
     }
     return triFound;
 }

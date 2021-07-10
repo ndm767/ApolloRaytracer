@@ -3,9 +3,11 @@
 
 #include <iostream>
 
-Ray::Ray(glm::vec3 origin, glm::vec3 direction) {
+Ray::Ray(glm::vec3 origin, glm::vec3 direction, void *_skipObj) {
     orig = origin;
     dir = glm::normalize(direction);
+
+    skipObj = _skipObj;
 }
 
 Ray::~Ray() {}
@@ -94,6 +96,24 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
             objMat->getReflectionCoef() * reflectRay.traceRay(s, depth + 1);
     }
 
+    // refraction
+    if (depth < MAX_DEPTH && objMat->getUseRefraction()) {
+        if (glm::dot(viewDir, hitNorm) >= 0) {
+            hitNorm *= -1.0f;
+        }
+        glm::vec3 V = viewDir / std::abs(glm::dot(viewDir, hitNorm));
+
+        float kf = std::pow(objMat->getIndexOfRefraction(), 2);
+        kf *= std::abs(glm::dot(V, V));
+        kf = kf - std::abs(glm::dot(V + hitNorm, V + hitNorm));
+        kf = 1.0f / std::sqrt(kf);
+
+        glm::vec3 refractDir = kf * (hitNorm + V) - hitNorm;
+        Ray refractRay(hitPos - hitNorm * 0.01f, -1.0f * refractDir,
+                       data.getHitObj());
+        retCol +=
+            objMat->getRefractionCoef() * refractRay.traceRay(s, depth + 1);
+    }
     retCol = glm::clamp(retCol, glm::vec3(0.0f), glm::vec3(1.0f));
 
     return retCol;
@@ -106,9 +126,9 @@ glm::vec3 Ray::traceRay(Scene &s, int depth) {
 
     bool foundObj = false;
 
-    for (auto o : s.getObjects()) {
+    for (auto &o : s.getObjects()) {
         HitData tempData(orig, dir);
-        if (o->testIntersection(tempData)) {
+        if (o.get() != (Object *)skipObj && o->testIntersection(tempData)) {
             foundObj = true;
             if (tempData.getObjDistSq() < closestData.getObjDistSq()) {
                 closestData = tempData;
