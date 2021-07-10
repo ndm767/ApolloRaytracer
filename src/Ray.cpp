@@ -89,7 +89,7 @@ glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
         glm::vec3 reflectDir =
             oppViewDir - 2.0f * glm::dot(oppViewDir, hitNorm) * hitNorm;
 
-        Ray reflectRay(hitPos + hitNorm * 0.0001f, reflectDir);
+        Ray reflectRay(hitPos + hitNorm * 0.01f, reflectDir);
         retCol +=
             objMat->getReflectionCoef() * reflectRay.traceRay(s, depth + 1);
     }
