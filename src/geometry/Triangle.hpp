@@ -11,6 +11,8 @@ class Triangle : public Object {
 
     bool testIntersection(HitData &data) override;
 
+    glm::vec3 *getPoints() { return &p[0]; }
+
   protected:
     glm::vec3 p[3];
 
