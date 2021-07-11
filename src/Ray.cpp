@@ -140,8 +140,9 @@ glm::vec3 Ray::traceRay(Scene &s, int depth) {
         return calcColor(s, closestData, depth);
     }
 
-    if (s.getUseIBL()) {
-        return s.getIBLColor(dir);
+    if (s.getUseEnv()) {
+        return s.getEnvColor(dir);
     }
+
     return s.getAmbientColor() * s.getAmbientStrength();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <string>
 
 // forward declaration because camera references ray which references scene
 // which references camera

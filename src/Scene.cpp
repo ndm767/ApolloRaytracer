@@ -12,12 +12,12 @@ Scene::Scene(int screenWidth, int screenHeight, glm::vec3 ambientCol,
     ambientStrength = ambientStr;
     ambientColor = ambientCol;
 
-    useIBL = false;
+    useEnv = false;
 }
 
 Scene::~Scene() {
-    if (useIBL) {
-        delete iblImage;
+    if (useEnv) {
+        delete envImage;
     }
 }
 
@@ -42,16 +42,16 @@ void Scene::setActiveCamera(unsigned index) {
     }
 }
 
-void Scene::setIBL(std::string path) {
-    useIBL = true;
-    iblImage = new Texture(path);
+void Scene::setEnv(std::string path) {
+    useEnv = true;
+    envImage = new Texture(path);
 }
 
-glm::vec3 Scene::getIBLColor(glm::vec3 dir) {
+glm::vec3 Scene::getEnvColor(glm::vec3 dir) {
     // get uv coordinates on image
     constexpr float pi = 3.14159f;
     float u = 0.5f + atan2(dir.x, dir.z) / (2 * pi);
     float v = 0.5f - asin(dir.y) / pi;
 
-    return iblImage->getColorAtPos(u, v);
+    return envImage->getColorAtPos(u, v);
 }

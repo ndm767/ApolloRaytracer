@@ -30,10 +30,10 @@ class Scene {
     glm::vec3 getAmbientColor() { return ambientColor; }
     float getAmbientStrength() { return ambientStrength; }
 
-    void setIBL(std::string path);
+    void setEnv(std::string path);
 
-    bool getUseIBL() { return useIBL; }
-    glm::vec3 getIBLColor(glm::vec3 dir);
+    bool getUseEnv() { return useEnv; }
+    glm::vec3 getEnvColor(glm::vec3 dir);
 
   protected:
     std::vector<std::shared_ptr<Object>> objs;
@@ -45,7 +45,7 @@ class Scene {
 
     unsigned activeCamera;
 
-    // image-based lighting
-    bool useIBL;
-    Texture *iblImage;
+    // environment mapping
+    bool useEnv;
+    Texture *envImage;
 };

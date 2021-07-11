@@ -1,7 +1,6 @@
 #include "FileLoader.hpp"
 #include "Ray.hpp"
 #include "Scene.hpp"
-#include "camera/OrthoCamera.hpp"
 #include "camera/PerspCamera.hpp"
 #include "display/ASCIIDisplay.hpp"
 #include "display/SDLDisplay.hpp"
@@ -105,10 +104,7 @@ int main(int argc, char *argv[]) {
     // Display *output = new ASCIIDisplay(width, height);
 
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
-    s.setIBL("assets/hdr/sunrise.hdr");
-
-    s.addCamera(std::make_shared<OrthoCamera>(width, height, glm::vec3(0, 0, 0),
-                                              glm::vec3(0, 0, 1)));
+    s.setEnv("assets/hdr/sunrise.hdr");
 
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
