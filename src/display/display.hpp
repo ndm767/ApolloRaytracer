@@ -19,6 +19,7 @@ class Display {
 
     // get keyboard (or other) events (pretty much only for SDL display)
     virtual bool getEventDown(int event) = 0;
+    virtual bool getEventUp(int event) = 0;
 
   protected:
     bool finished;

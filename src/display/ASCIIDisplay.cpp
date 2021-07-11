@@ -58,3 +58,5 @@ bool ASCIIDisplay::getEventDown(int event) {
     // inputs?)
     return false;
 }
+
+bool ASCIIDisplay::getEventUp(int event) { return false; }

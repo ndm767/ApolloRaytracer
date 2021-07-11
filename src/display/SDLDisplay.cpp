@@ -34,14 +34,14 @@ void SDLDisplay::drawPixel(unsigned x, unsigned y, glm::vec3 color) {
     }
 }
 
-// detects if a key is in the keys down vector
-bool SDLDisplay::inVector(SDL_Scancode key) {
-    return std::find(keysDown.begin(), keysDown.end(), key) != keysDown.end();
+// detects if a key is in a vector
+bool SDLDisplay::inVector(std::vector<SDL_Scancode> &vec, SDL_Scancode key) {
+    return std::find(vec.begin(), vec.end(), key) != vec.end();
 }
 
 // sets key as pressed
-void SDLDisplay::setKey(SDL_KeyboardEvent ke) {
-    if (!inVector(ke.keysym.scancode)) {
+void SDLDisplay::setKeyDown(SDL_KeyboardEvent ke) {
+    if (!inVector(keysDown, ke.keysym.scancode)) {
         keysDown.push_back(ke.keysym.scancode);
     }
 }
@@ -73,6 +73,10 @@ void SDLDisplay::flush() {
 
     SDL_Event e;
     bool keyEvent = false;
+
+    // we don't want the released keys to persist
+    keysUp.clear();
+
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             finished = true;
@@ -81,8 +85,11 @@ void SDLDisplay::flush() {
                 finished = true;
             }
             keyEvent = true;
-            setKey(e.key);
+            setKeyDown(e.key);
         } else if (e.type == SDL_KEYUP) {
+            // no fancy functions because we don't really care if its in the
+            // vector multiple times
+            keysUp.push_back(e.key.keysym.scancode);
             keyEvent = true;
         }
     }
@@ -101,5 +108,10 @@ glm::vec3 SDLDisplay::getPixel(unsigned x, unsigned y) {
 
 bool SDLDisplay::getEventDown(int event) {
     SDL_Scancode key = (SDL_Scancode)event;
-    return inVector(key);
+    return inVector(keysDown, key);
+}
+
+bool SDLDisplay::getEventUp(int event) {
+    SDL_Scancode key = (SDL_Scancode)event;
+    return inVector(keysUp, key);
 }

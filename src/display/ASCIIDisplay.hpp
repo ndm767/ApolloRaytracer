@@ -15,6 +15,7 @@ class ASCIIDisplay : public Display {
     glm::vec3 getPixel(unsigned x, unsigned y) override;
 
     bool getEventDown(int event) override;
+    bool getEventUp(int event) override;
 
   protected:
     std::string values = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/"

@@ -17,16 +17,18 @@ class SDLDisplay : public Display {
     glm::vec3 getPixel(unsigned x, unsigned y) override;
 
     bool getEventDown(int event) override;
+    bool getEventUp(int event) override;
 
   protected:
     SDL_Window *rWindow;
     SDL_Renderer *rRenderer;
 
-    // sees if a key is in the keysDown vector
-    bool inVector(SDL_Scancode key);
+    // sees if a key is in a vector
+    bool inVector(std::vector<SDL_Scancode> &vec, SDL_Scancode key);
     // sets key as pressed
-    void setKey(SDL_KeyboardEvent ke);
+    void setKeyDown(SDL_KeyboardEvent ke);
     // removes keys that are no longer pressed
     void cleanKeys();
     std::vector<SDL_Scancode> keysDown;
+    std::vector<SDL_Scancode> keysUp;
 };
