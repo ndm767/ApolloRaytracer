@@ -22,6 +22,8 @@ class Scene {
     std::vector<std::shared_ptr<Object>> &getObjects() { return objs; }
     std::vector<std::shared_ptr<Light>> &getLights() { return lights; }
 
+    int getNumCameras() { return cams.size(); }
+
     std::shared_ptr<Camera> getActiveCamera() { return cams.at(activeCamera); }
     void setActiveCamera(unsigned index);
 

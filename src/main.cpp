@@ -106,6 +106,11 @@ int main(int argc, char *argv[]) {
     Scene s(width, height, glm::vec3(1, 1, 1), 0.1f);
     s.setIBL("assets/hdr/sunrise.hdr");
 
+    s.addCamera(std::make_shared<PerspCamera>(
+        width, height, glm::vec3(-6, 0, 0), glm::vec3(1, 0, 0), 60.0f));
+    s.addCamera(std::make_shared<PerspCamera>(width, height, glm::vec3(6, 0, 0),
+                                              glm::vec3(-1, 0, 0), 45.0f));
+
     Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
     Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
     Material glass(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f), 100);
@@ -130,7 +135,8 @@ int main(int argc, char *argv[]) {
     s.addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));
 
     bool shouldUpdate = true;
-    int res = 2;
+    int res = 4;
+    int currCam = 0;
 
     while (!output->isFinished()) {
         if (shouldUpdate) {
@@ -143,6 +149,14 @@ int main(int argc, char *argv[]) {
 
         output->flush();
         handleEvents(output, s.getActiveCamera(), &shouldUpdate);
+        if (output->getEventUp(SDL_SCANCODE_SPACE)) {
+            shouldUpdate = true;
+            currCam++;
+            if (currCam >= s.getNumCameras()) {
+                currCam = 0;
+            }
+            s.setActiveCamera(currCam);
+        }
     }
 
     delete output;
