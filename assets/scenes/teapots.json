@@ -1,0 +1,86 @@
+{
+    "cameras": {
+        "0":{
+            "type": "persp",
+            "pos": [0, 0, -6],
+            "dir": [0, 0, 1],
+            "fov": 60.0
+        }
+    },
+
+    "materials": {
+        "0": {
+            "diffuse": [1, 0, 0],
+            "specular": [0.5, 0.5, 0.5],
+            "exp": 10,
+            "reflection": {
+                "use": false
+            },
+            "refraction":{
+                "use": false
+            }
+        },
+        "1": {
+            "diffuse": [0.1, 0.1, 0.1],
+            "specular": [0.5, 0.5, 0.5],
+            "exp": 100,
+            "reflection": {
+                "use": false
+            },
+            "refraction":{
+                "use": true,
+                "index": 1.52,
+                "coef": 0.99
+            }
+        },
+        "2": {
+            "diffuse": [0.5, 0.5, 0.5],
+            "specular": [0.5, 0.5, 0.5],
+            "exp": 100,
+            "reflection": {
+                "use": true,
+                "coef": 0.5
+            },
+            "refraction":{
+                "use": false
+            }
+        }
+    },
+
+    "objects": {
+        "0":{
+            "type": "mesh",
+            "material": 0,
+            "scale": 0.5,
+            "pos": [-3, 0, 0],
+            "source": "assets/models/teapot.obj"
+        },
+        "1":{
+            "type": "mesh",
+            "material": 1,
+            "scale": 0.5,
+            "pos": [0, 0, 0],
+            "source": "assets/models/teapot.obj"
+        },
+        "2":{
+            "type": "mesh",
+            "material": 2,
+            "scale": 0.5,
+            "pos": [3, 0, 0],
+            "source": "assets/models/teapot.obj"
+        }
+    },
+
+    "lights": {
+        "0":{
+            "position": [0, 3, -2],
+            "intensity": 1,
+            "color": [1, 1, 1]
+        }
+    },
+
+    "misc": {
+        "envMap": "assets/hdr/sunrise.hdr",
+        "activeCam": 1
+    }
+}
