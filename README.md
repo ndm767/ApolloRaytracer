@@ -11,5 +11,6 @@ A hobby raytracer written in C++
 
 - SDL2
 - Assimp
+- glm
 - nlohmann/json
 - cxxopts
