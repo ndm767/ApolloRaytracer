@@ -73,7 +73,7 @@
             "material": 2,
             "scale": 10,
             "pos": [-2, -1.334, 3],
-            "source": "assets/models/bun_zipper_res4.ply"
+            "source": "assets/models/bun_zipper_res3.ply"
         }
 
     },
@@ -93,6 +93,6 @@
 
     "misc": {
         "envMap": "assets/hdr/sunrise.hdr",
-        "activeCam": 1
+        "activeCam": 0
     }
 }
