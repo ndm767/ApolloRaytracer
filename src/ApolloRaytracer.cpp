@@ -3,7 +3,10 @@
 #include <future>
 #include <iostream>
 
-ApolloRaytracer::ApolloRaytracer(int outWidth, int outHeight, int outRes) {
+#include "SceneLoader.hpp"
+
+ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
+                                 int outHeight, int outRes) {
 
     width = outWidth;
     height = outHeight;
@@ -15,33 +18,9 @@ ApolloRaytracer::ApolloRaytracer(int outWidth, int outHeight, int outRes) {
     // Display *output = new ASCIIDisplay(width, height);
 
     scene = new Scene(width, height, glm::vec3(1, 1, 1), 0.1f);
-    scene->setEnv("assets/hdr/sunrise.hdr");
 
-    Material red(glm::vec3(1, 0, 0), glm::vec3(0.5f), 100);
-    Material grey(glm::vec3(0.25f), glm::vec3(0.25f), 10);
-    Material glass(glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.5f), 100);
-    red.setUseReflection(true);
-    red.setReflectionCoef(0.5f);
-    grey.setUseReflection(true);
-    grey.setReflectionCoef(0.25f);
-
-    glass.setUseRefraction(true);
-    glass.setIndexOfRefraction(1.52f);
-    glass.setRefractionCoef(0.99f);
-
-    scene->addObject(
-        std::make_shared<Sphere>(glm::vec3(0, -101, 5), 100.0f, grey));
-    scene->addObject(
-        std::make_shared<Sphere>(glm::vec3(2, -0.5f, 4), 0.5f, grey));
-
-    FileLoader fl;
-    fl.loadFile("assets/models/cow.obj", *scene, glm::vec3(0, 0, 3), 0.25f,
-                &red);
-    fl.loadFile("assets/models/bun_zipper_res4.ply", *scene,
-                glm::vec3(-2, -1.334, 3), 10.0f, &glass);
-
-    scene->addLight(std::make_shared<Light>(glm::vec3(0, 3, 4), 1.0f));
-    scene->addLight(std::make_shared<Light>(glm::vec3(-2, 3, 2), 0.5f));
+    SceneLoader sl;
+    sl.loadScene(width, height, scenePath, *scene);
 }
 
 ApolloRaytracer::~ApolloRaytracer() {

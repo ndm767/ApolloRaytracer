@@ -1,17 +1,17 @@
 #pragma once
 
-#include "FileLoader.hpp"
 #include "Ray.hpp"
 #include "Scene.hpp"
 #include "camera/PerspCamera.hpp"
 #include "display/ASCIIDisplay.hpp"
 #include "display/SDLDisplay.hpp"
-#include "geometry/Sphere.hpp"
-#include "light/Light.hpp"
+
+#include <string>
 
 class ApolloRaytracer {
   public:
-    ApolloRaytracer(int outWidth, int outHeight, int outRes);
+    ApolloRaytracer(std::string scenePath, int outWidth, int outHeight,
+                    int outRes);
     ~ApolloRaytracer();
 
     void run();

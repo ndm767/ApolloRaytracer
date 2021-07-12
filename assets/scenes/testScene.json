@@ -1,0 +1,98 @@
+{
+    "cameras": {
+        "0": {
+            "type": "persp",
+            "pos": [0, 0, 6],
+            "dir": [0, 0, -1],
+            "fov": 60.0
+        }
+    },
+
+    "materials": {
+        "0": {
+            "diffuse": [0.25, 0.25, 0.25],
+            "specular": [0.25, 0.25, 0.25],
+            "exp": 10,
+            "reflection": {
+                "use": true,
+                "coef": 0.5
+            },
+            "refraction": {
+                "use": false
+            }
+        },
+        "1": {
+            "diffuse": [1, 0, 0],
+            "specular": [0.5, 0.5, 0.5],
+            "exp": 100,
+            "reflection": {
+                "use": true,
+                "coef": 0.5
+            },
+            "refraction": {
+                "use": false
+            }
+        },
+        "2": {
+            "diffuse": [0.1, 0.1, 0.1],
+            "specular": [0.5, 0.5, 0.5],
+            "exp": 100,
+            "reflection": {
+                "use": false
+            },
+            "refraction": {
+                "use": true,
+                "index": 1.52,
+                "coef": 0.99
+            }
+        }
+    },
+
+    "objects": {
+        "0": {
+            "type": "sphere",
+            "material": 0,
+            "radius": 100.0,
+            "pos": [0, -101, 5]
+        },
+        "1": {
+            "type": "sphere",
+            "material": 0,
+            "radius": 0.5,
+            "pos": [2, -0.5, 4]
+        },
+        "2": {
+            "type": "mesh",
+            "material": 1,
+            "scale": 0.25,
+            "pos": [0, 0, 3],
+            "source": "assets/models/cow.obj"
+        },
+        "3": {
+            "type": "mesh",
+            "material": 2,
+            "scale": 10,
+            "pos": [-2, -1.334, 3],
+            "source": "assets/models/bun_zipper_res4.ply"
+        }
+
+    },
+
+    "lights": {
+        "0": {
+            "position": [0, 3, 4],
+            "intensity": 1,
+            "color": [1, 1, 1]
+        },
+        "1": {
+            "position": [-2, 3, 2],
+            "intensity": 0.5,
+            "color": [1, 1, 1]
+        }
+    },
+
+    "misc": {
+        "envMap": "assets/hdr/sunrise.hdr",
+        "activeCam": 1
+    }
+}
