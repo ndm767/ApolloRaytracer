@@ -6,7 +6,7 @@
 class PerspCamera : public Camera {
   public:
     PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
-                glm::vec3 direction, float horizFOV);
+                glm::vec3 direction, float horizFOV, int _maxRayDepth = 3);
     ~PerspCamera();
 
     Ray getRayAtPixel(int x, int y) override;

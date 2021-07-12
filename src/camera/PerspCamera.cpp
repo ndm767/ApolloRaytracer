@@ -5,7 +5,8 @@
 #include <iostream>
 
 PerspCamera::PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
-                         glm::vec3 direction, float horizFOV) {
+                         glm::vec3 direction, float horizFOV,
+                         int _maxRayDepth) {
     width = screenWidth;
     height = screenHeight;
 
@@ -22,6 +23,8 @@ PerspCamera::PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
 
     pitch = 0.0f;
     yaw = 0.0f;
+
+    maxRayDepth = _maxRayDepth;
 }
 
 PerspCamera::~PerspCamera() {}
@@ -80,7 +83,7 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
         perpDir = glm::normalize(glm::cross(glm::vec3(0, 0, 1), dir));
     }
 
-    Ray r(orig, lookDir, 3);
+    Ray r(orig, lookDir, maxRayDepth);
     return r;
 }
 

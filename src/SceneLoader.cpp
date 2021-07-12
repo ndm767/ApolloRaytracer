@@ -23,8 +23,8 @@ glm::vec3 SceneLoader::jArrToVec(jArr arr) {
     return ret;
 }
 
-void SceneLoader::loadScene(int screenWidth, int screenHeight, std::string path,
-                            Scene &scene) {
+void SceneLoader::loadScene(int screenWidth, int screenHeight, int rayDepth,
+                            std::string path, Scene &scene) {
 
     std::ifstream f(path);
     if (!f) {
@@ -51,7 +51,7 @@ void SceneLoader::loadScene(int screenWidth, int screenHeight, std::string path,
                 // fov
                 float hFov = currCam["fov"].get<float>();
                 scene.addCamera(std::make_shared<PerspCamera>(
-                    screenWidth, screenHeight, inPos, inDir, hFov));
+                    screenWidth, screenHeight, inPos, inDir, hFov, rayDepth));
             }
         }
     }

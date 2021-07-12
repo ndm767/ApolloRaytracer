@@ -13,8 +13,8 @@ class SceneLoader {
     SceneLoader();
     ~SceneLoader();
 
-    void loadScene(int screenWidth, int screenHeight, std::string path,
-                   Scene &scene);
+    void loadScene(int screenWidth, int screenHeight, int rayDepth,
+                   std::string path, Scene &scene);
 
   protected:
     glm::vec3 jArrToVec(jArr arr);

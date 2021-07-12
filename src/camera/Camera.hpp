@@ -31,4 +31,6 @@ class Camera {
     glm::vec3 perpDir;
 
     float pitch, yaw;
+
+    int maxRayDepth;
 };

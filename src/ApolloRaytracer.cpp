@@ -6,7 +6,7 @@
 #include "SceneLoader.hpp"
 
 ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
-                                 int outHeight, int outRes) {
+                                 int outHeight, int outRes, int maxRayDepth) {
 
     width = outWidth;
     height = outHeight;
@@ -14,13 +14,15 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
     res = outRes;
     currCam = 0;
 
+    rayDepth = maxRayDepth;
+
     output = new SDLDisplay(width, height);
     // Display *output = new ASCIIDisplay(width, height);
 
-    scene = new Scene(width, height, glm::vec3(1, 1, 1), 0.1f);
+    scene = new Scene(width, height, rayDepth, glm::vec3(1, 1, 1), 0.1f);
 
     SceneLoader sl;
-    sl.loadScene(width, height, scenePath, *scene);
+    sl.loadScene(width, height, rayDepth, scenePath, *scene);
 }
 
 ApolloRaytracer::~ApolloRaytracer() {

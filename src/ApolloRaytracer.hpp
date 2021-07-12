@@ -11,7 +11,7 @@
 class ApolloRaytracer {
   public:
     ApolloRaytracer(std::string scenePath, int outWidth, int outHeight,
-                    int outRes);
+                    int outRes, int maxRayDepth);
     ~ApolloRaytracer();
 
     void run();
@@ -23,6 +23,7 @@ class ApolloRaytracer {
 
     int width, height, res;
     int currCam;
+    int rayDepth;
 
     Display *output;
     Scene *scene;

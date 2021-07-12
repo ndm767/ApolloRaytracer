@@ -11,7 +11,8 @@
 // class that hold entire scene
 class Scene {
   public:
-    Scene(int width, int height, glm::vec3 ambientCol, float ambientStr);
+    Scene(int width, int height, int rayDepth, glm::vec3 ambientCol,
+          float ambientStr);
     ~Scene();
 
     // add functions return the index of the thing added
