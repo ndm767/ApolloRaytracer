@@ -35,7 +35,8 @@ Ray PerspCamera::getRayAtPixel(int x, int y) {
     // start with camera looking forward and find the pixel where the ray should
     // go through
     glm::vec3 lookDir = glm::vec3(0, 0, 1);
-    lookDir.x = -1 * sin(hFOV) + x * (2 * sin(hFOV) / width);
+    lookDir.x = (-1 * sin(hFOV) + x * (2 * sin(hFOV) / width)) *
+                ((float)width / height);
     lookDir.y = sin(vFOV) - y * (2 * sin(vFOV) / height);
 
     // rotate lookDir to align with the original direction
