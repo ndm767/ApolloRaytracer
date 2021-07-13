@@ -140,6 +140,7 @@ glm::vec3 Ray::traceRay(Scene &s, int depth) {
         return calcColor(s, closestData, depth);
     }
 
+    // environmental mapping
     if (s.getUseEnv()) {
         return s.getEnvColor(dir);
     }
