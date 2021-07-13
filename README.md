@@ -1,14 +1,34 @@
 # ApolloRaytracer
 
-A hobby raytracer written in C++ and using SDL2 for output
+A hobby blinn-phong shaded ray-tracer written in C++
 
+## Features
+
+- SDL2 Window output
+- Keyboard controls
+- Blinn-Phong shading
+- Reflections
+- Refractions
+- Basic multithreading
+- Sphere geometry
+- Triangle geometry
+- Mesh geometry / model loading
+- AABB for mesh-ray collisions
+- Environment mapping
+- Basic material system
+- ASCII output (doesn't play well with environment mapping, works better if you decrease terminal font, can be enabled in `ApolloRaytracer.cpp`)
+- JSON scene loading
+- Multiple cameras and ability to cycle through them
+- Multiple lights
 
 ## Controls
 
 - WASD to move  
 - QE to move up and down
 - arrow keys for camera rotation
-- scenes are loaded using json files, examples can be seen in the assets/scenes folder
+- scenes are loaded using a JSON file (examples can be seen in `assets/scenes/`)
+- command line options can be seen by running `./apollo --help`
+
 
 ## Building
 
@@ -21,4 +41,4 @@ A hobby raytracer written in C++ and using SDL2 for output
 - Assimp
 - glm
 - nlohmann/json
-- cxxopts
+- jarro2783/cxxopts
