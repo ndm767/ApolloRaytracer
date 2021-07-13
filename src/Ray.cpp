@@ -34,7 +34,7 @@ bool Ray::isThereIntersection(Scene &s, float *distSq) {
     return foundObj;
 }
 
-// calculate ray hit color using phong
+// calculate ray hit color using blinn-phong shading
 glm::vec3 Ray::calcColor(Scene &s, HitData &data, int depth) {
 
     Material *objMat = data.getHitMat();
