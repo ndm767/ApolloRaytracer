@@ -1,6 +1,6 @@
 # ApolloRaytracer
 
-A hobby blinn-phong shaded ray-tracer written in C++
+A hobby Blinn-Phong shaded ray-tracer written in C++
 
 ![teapots](https://user-images.githubusercontent.com/5031736/125385940-76416300-e369-11eb-9124-a590e2d20940.png)
 ![testscene](https://user-images.githubusercontent.com/5031736/125385958-7f323480-e369-11eb-9149-007615d59c52.png)
