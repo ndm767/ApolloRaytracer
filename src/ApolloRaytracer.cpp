@@ -17,7 +17,7 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
     rayDepth = maxRayDepth;
 
     output = new SDLDisplay(width, height);
-    // Display *output = new ASCIIDisplay(width, height);
+    // output = new ASCIIDisplay(width, height);
 
     scene = new Scene(width, height, rayDepth, glm::vec3(1, 1, 1), 0.1f);
 
