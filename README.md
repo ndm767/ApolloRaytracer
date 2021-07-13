@@ -25,7 +25,6 @@ A hobby Blinn-Phong shaded ray-tracer written in C++
 - ASCII output (doesn't play well with environment mapping, works better if you decrease terminal font, can be enabled in `ApolloRaytracer.cpp`)
 - JSON scene loading
 - Multiple cameras and ability to cycle through them
-- Multiple lights
 
 ## Controls
 
