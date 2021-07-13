@@ -26,9 +26,9 @@ A hobby blinn-phong shaded ray-tracer written in C++
 - WASD to move  
 - QE to move up and down
 - arrow keys for camera rotation
+- space bar to cycle through cameras in scene
 - scenes are loaded using a JSON file (examples can be seen in `assets/scenes/`)
 - command line options can be seen by running `./apollo --help`
-
 
 ## Building
 
