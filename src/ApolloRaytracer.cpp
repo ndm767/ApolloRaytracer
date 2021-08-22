@@ -36,7 +36,7 @@ void ApolloRaytracer::run() {
             Uint32 sTime = SDL_GetTicks();
             drawPixels(scene);
             Uint32 eTime = SDL_GetTicks();
-            std::cout << "Frame time: " << eTime - sTime << std::endl;
+            // std::cout << "Frame time: " << eTime - sTime << std::endl;
             shouldUpdate = false;
         }
 
