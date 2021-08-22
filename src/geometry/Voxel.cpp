@@ -67,6 +67,9 @@ Voxel::Voxel(glm::vec3 _corner, float _length, int _depth, int _maxDepth,
                 }
             }
         }
+
+        // stop storing contained triangles for non-terminal voxel
+        containedTris.clear();
     }
 }
 
