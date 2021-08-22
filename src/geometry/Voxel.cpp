@@ -34,26 +34,6 @@ Voxel::Voxel(glm::vec3 _corner, float _length, int _depth, int _maxDepth,
                         bool tY = false;
                         bool tZ = false;
 
-                        /*for (auto p : points) {
-                            if (p.x >= newCorner.x &&
-                                p.x <= newCorner.x + lenStep) {
-                                tX = true;
-                            }
-                            if (p.y >= newCorner.y &&
-                                p.y <= newCorner.y + lenStep) {
-                                tY = true;
-                            }
-                            if (p.z >= newCorner.z &&
-                                p.z <= newCorner.z + lenStep) {
-                                tZ = true;
-                            }
-
-                            if (tX && tY && tZ) {
-                                trisInSub.push_back(t);
-                                break;
-                            }
-                        }*/
-
                         float maxX = std::max(std::max(p[0].x, p[1].x), p[2].x);
                         float maxY = std::max(std::max(p[0].y, p[1].y), p[2].y);
                         float maxZ = std::max(std::max(p[0].z, p[1].z), p[2].z);
