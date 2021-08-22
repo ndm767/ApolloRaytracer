@@ -8,6 +8,9 @@ class BoundingBox : public Object {
     BoundingBox(glm::vec3 _minPos, glm::vec3 _maxPos);
     ~BoundingBox();
 
+    glm::vec3 getMinPos() { return minPos; }
+    glm::vec3 getMaxPos() { return maxPos; }
+
     bool testIntersection(HitData &data) override;
 
   protected:

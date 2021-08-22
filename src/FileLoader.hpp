@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "geometry/Mesh.hpp"
+#include "geometry/OctreeMesh.hpp"
 
 #include <string>
 

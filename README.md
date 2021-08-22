@@ -10,12 +10,14 @@ A hobby Blinn-Phong shaded ray-tracer written in C++
 
 ## Features
 
+- Octree mesh acceleration
+- Basic multithreading
+- JSON scene loading
 - SDL2 Window output
 - Keyboard controls
 - Blinn-Phong shading
 - Reflections
 - Refractions
-- Basic multithreading
 - Sphere geometry
 - Triangle geometry
 - Mesh geometry / model loading
@@ -23,7 +25,6 @@ A hobby Blinn-Phong shaded ray-tracer written in C++
 - Environment mapping
 - Basic material system
 - ASCII output (doesn't play well with environment mapping, works better if you decrease terminal font, can be enabled in `ApolloRaytracer.cpp`)
-- JSON scene loading
 - Multiple cameras and ability to cycle through them
 
 ## Controls

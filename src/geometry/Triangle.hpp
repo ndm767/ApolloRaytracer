@@ -2,6 +2,8 @@
 
 #include "Object.hpp"
 
+#include <array>
+
 // triangle mesh
 class Triangle : public Object {
   public:
@@ -10,6 +12,10 @@ class Triangle : public Object {
     ~Triangle();
 
     bool testIntersection(HitData &data) override;
+
+    std::array<glm::vec3, 3> getPoints() {
+        return std::array<glm::vec3, 3>{p[0], p[1], p[2]};
+    }
 
   protected:
     glm::vec3 p[3];

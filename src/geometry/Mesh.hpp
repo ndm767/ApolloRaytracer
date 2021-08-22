@@ -21,6 +21,7 @@ class Mesh : public Object {
     bool testIntersection(HitData &data) override;
 
     std::shared_ptr<BoundingBox> getBoundingBox() { return bb; }
+    std::vector<std::shared_ptr<Triangle>> getTris() { return tris; }
 
   protected:
     std::vector<std::shared_ptr<Triangle>> tris;

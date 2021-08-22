@@ -65,6 +65,10 @@ void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
             matToUse = *mat;
         }
 
-        targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale, matToUse));
+        Mesh tempMesh(mi, pos, scale, matToUse);
+
+        targetScene.addObject(std::make_shared<OctreeMesh>(tempMesh, 5));
+        // targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale,
+        // matToUse));
     }
 }
