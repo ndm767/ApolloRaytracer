@@ -23,6 +23,8 @@ class Mesh : public Object {
     std::shared_ptr<BoundingBox> getBoundingBox() { return bb; }
     std::vector<std::shared_ptr<Triangle>> getTris() { return tris; }
 
+    int getNumTris() { return tris.size(); }
+
   protected:
     std::vector<std::shared_ptr<Triangle>> tris;
     std::shared_ptr<BoundingBox> bb;
