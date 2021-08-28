@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-// basic bounding box to speed up mesh rendering
+// base voxel object for octree mesh acceleration
 class Voxel : public Object {
   public:
     Voxel(glm::vec3 _corner, float _length, int _depth, int _maxDepth,
