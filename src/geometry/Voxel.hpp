@@ -14,9 +14,10 @@ class Voxel : public Object {
     ~Voxel();
 
     bool testIntersection(HitData &data) override;
+    bool testSubVoxels(HitData &data);
 
   protected:
-    bool didHitVoxel(glm::vec3 rayOrig, glm::vec3 rayDir);
+    bool didHitVoxel(glm::vec3 rayOrig, glm::vec3 rayDir, float &hitT);
 
     int depth, maxDepth;
     glm::vec3 corner;

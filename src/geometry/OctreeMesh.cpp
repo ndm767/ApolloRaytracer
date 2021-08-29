@@ -32,6 +32,10 @@ bool OctreeMesh::testIntersection(HitData &data) {
     bool hit = baseVoxel->testIntersection(retData);
 
     if (hit) {
+        hit = baseVoxel->testSubVoxels(retData);
+    }
+
+    if (hit) {
         data = retData;
         data.setHitObj((void *)this);
     }

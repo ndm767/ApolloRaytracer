@@ -67,7 +67,21 @@ void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
 
         Mesh tempMesh(mi, pos, scale, matToUse);
 
-        targetScene.addObject(std::make_shared<OctreeMesh>(tempMesh, 5));
+        // the best performance is gotten when the number of subvoxels roughly
+        // equals the number of triangles in the model
+        // this is because if there are less subvoxels, then multiple triangles
+        // have to be tested per subvoxel and if there are less, then we are
+        // traversing excessive subvoxels
+        int numTris = tempMesh.getNumTris();
+        int numSubVoxels = 1;
+        int numLayers = 0;
+        while (numSubVoxels < numTris) {
+            numSubVoxels *= 8;
+            numLayers++;
+        }
+
+        targetScene.addObject(
+            std::make_shared<OctreeMesh>(tempMesh, numLayers));
         // targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale,
         // matToUse));
     }

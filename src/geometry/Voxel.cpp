@@ -1,5 +1,8 @@
 #include "Voxel.hpp"
 
+#include <algorithm>
+#include <utility>
+
 Voxel::Voxel(glm::vec3 _corner, float _length, int _depth, int _maxDepth,
              std::vector<std::shared_ptr<Triangle>> tris, Material mat) {
     objMat = mat;
@@ -75,8 +78,7 @@ Voxel::Voxel(glm::vec3 _corner, float _length, int _depth, int _maxDepth,
 
 Voxel::~Voxel() {}
 
-bool Voxel::didHitVoxel(glm::vec3 rayOrig, glm::vec3 rayDir) {
-    float hitT;
+bool Voxel::didHitVoxel(glm::vec3 rayOrig, glm::vec3 rayDir, float &hitT) {
 
     if (rayDir.x != 0) {
         if (rayDir.x > 0) {
@@ -143,48 +145,99 @@ bool Voxel::testIntersection(HitData &data) {
     HitData retData(rayOrig, rayDir);
     retData.setObjDistSq(INFINITY);
 
-    if (didHitVoxel(rayOrig, rayDir)) {
-        // if it is the maximum depth, go through the contained triangles
-        if (depth == maxDepth) {
+    float hitT = 0.0f;
 
-            bool triFound = false;
+    bool hit = didHitVoxel(rayOrig, rayDir, hitT);
 
-            for (auto t : containedTris) {
-                HitData tempData(rayOrig, rayDir);
-                if (t->testIntersection(tempData)) {
-                    triFound = true;
-                    if (tempData.getObjDistSq() < retData.getObjDistSq()) {
-                        retData = tempData;
-                    }
+    if (hit) {
+        glm::vec3 hPos = rayOrig + rayDir * hitT;
+        retData.setHitPos(hPos);
+
+        float dist = std::pow(rayOrig.x - hPos.x, 2) +
+                     std::pow(rayOrig.y - hPos.y, 2) +
+                     std::pow(rayOrig.z - hPos.z, 2);
+        retData.setObjDistSq(dist);
+    }
+
+    data = retData;
+
+    return hit;
+}
+
+bool Voxel::testSubVoxels(HitData &data) {
+
+    glm::vec3 rayOrig = data.getRayOrig();
+    glm::vec3 rayDir = data.getRayDir();
+
+    HitData retData(rayOrig, rayDir);
+    retData.setObjDistSq(INFINITY);
+
+    // if it is the maximum depth, go through the contained triangles
+    if (depth == maxDepth) {
+
+        bool triFound = false;
+
+        for (auto t : containedTris) {
+            HitData tempData(rayOrig, rayDir);
+            if (t->testIntersection(tempData)) {
+                triFound = true;
+                if (tempData.getObjDistSq() < retData.getObjDistSq()) {
+                    retData = tempData;
                 }
             }
-
-            if (triFound) {
-                data = retData;
-                data.setHitObj((void *)this);
-            }
-            return triFound;
-
-        } else {
-
-            // otherwise, go through the subvoxels
-            bool subHit = false;
-            for (auto v : subVoxels) {
-                HitData tempData(rayOrig, rayDir);
-                if (v->testIntersection(tempData)) {
-                    subHit = true;
-                    if (tempData.getObjDistSq() < retData.getObjDistSq()) {
-                        retData = tempData;
-                    }
-                }
-            }
-
-            if (subHit) {
-                data = retData;
-                data.setHitObj((void *)this);
-            }
-            return subHit;
         }
+
+        if (triFound) {
+            data = retData;
+            data.setHitObj((void *)this);
+        }
+        return triFound;
+
+    } else {
+
+        // otherwise, go through the subvoxels
+        bool subHit = false;
+
+        std::vector<std::pair<std::shared_ptr<Voxel>, float>> closestSubVoxels;
+
+        // find all of the subvoxels that are hit
+        for (auto v : subVoxels) {
+            HitData tempData(rayOrig, rayDir);
+            if (v->testIntersection(tempData)) {
+                subHit = true;
+                closestSubVoxels.push_back(
+                    std::make_pair(v, tempData.getObjDistSq()));
+            }
+        }
+
+        if (subHit) {
+            subHit = false;
+
+            // sort voxels by distance from ray origin
+            std::sort(closestSubVoxels.begin(), closestSubVoxels.end(),
+                      [](auto &a, auto &b) { return a.second < b.second; });
+
+            // test subvoxels of subvoxels in order of distance from origin
+            for (auto p : closestSubVoxels) {
+                auto v = p.first;
+                HitData tempData(rayOrig, rayDir);
+                if (v->testSubVoxels(tempData)) {
+                    if (tempData.getObjDistSq() < retData.getObjDistSq()) {
+                        retData = tempData;
+                        subHit = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // if a triangle within a subvoxel has been found
+        if (subHit) {
+            data = retData;
+            data.setHitObj((void *)this);
+        }
+
+        return subHit;
     }
 
     return false;
