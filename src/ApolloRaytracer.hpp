@@ -2,6 +2,7 @@
 
 #include "Ray.hpp"
 #include "Scene.hpp"
+#include "backends/backend.hpp"
 #include "camera/PerspCamera.hpp"
 #include "display/ASCIIDisplay.hpp"
 #include "display/SDLDisplay.hpp"
@@ -18,8 +19,6 @@ class ApolloRaytracer {
 
   protected:
     void handleEvents(std::shared_ptr<Camera> activeCamera);
-    void drawColumn(Camera *c, Scene *s, int x);
-    void drawPixels(Scene *s);
 
     int width, height, res;
     int currCam;
@@ -28,6 +27,8 @@ class ApolloRaytracer {
 
     Display *output;
     Scene *scene;
+
+    Backend *backend;
 
     bool shouldUpdate;
 };

@@ -5,6 +5,7 @@ PCXXSRC += $(wildcard src/display/*.cpp)
 PCXXSRC += $(wildcard src/geometry/*.cpp)
 PCXXSRC += $(wildcard src/camera/*.cpp)
 PCXXSRC += $(wildcard src/light/*.cpp)
+PCXXSRC += $(wildcard src/backends/*.cpp)
 
 POBJS := $(PCXXSRC:.cpp=.o)
 

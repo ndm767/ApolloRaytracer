@@ -1,9 +1,9 @@
 #include "ApolloRaytracer.hpp"
 
-#include <future>
 #include <iostream>
 
 #include "SceneLoader.hpp"
+#include "backends/CPUBackend.hpp"
 
 ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
                                  int outHeight, int outRes, int maxRayDepth,
@@ -23,6 +23,8 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
 
     scene = new Scene(width, height, rayDepth, glm::vec3(1, 1, 1), 0.1f);
 
+    backend = new CPUBackend(width, height, numSamples, res);
+
     SceneLoader sl;
     sl.loadScene(width, height, rayDepth, scenePath, *scene);
 }
@@ -30,13 +32,14 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
 ApolloRaytracer::~ApolloRaytracer() {
     delete scene;
     delete output;
+    delete backend;
 }
 
 void ApolloRaytracer::run() {
     while (!output->isFinished()) {
         if (shouldUpdate) {
             Uint32 sTime = SDL_GetTicks();
-            drawPixels(scene);
+            backend->render(scene, output);
             Uint32 eTime = SDL_GetTicks();
             // std::cout << "Frame time: " << eTime - sTime << std::endl;
             shouldUpdate = false;
@@ -52,39 +55,6 @@ void ApolloRaytracer::run() {
             }
             scene->setActiveCamera(currCam);
         }
-    }
-}
-
-// traces rays one column at a time
-void ApolloRaytracer::drawColumn(Camera *c, Scene *s, int x) {
-    for (int y = 0; y < height; y += res) {
-        glm::vec3 result = glm::vec3(0);
-        float sampDist = float(res) / numSamples;
-        for (int n = 0; n < numSamples; n++) {
-            Ray r = c->getRayAtPixel(x + sampDist * n, y + sampDist * n);
-            result += r.traceRay(*s);
-        }
-        for (int i = 0; i < res; i++) {
-            for (int j = 0; j < res; j++) {
-                output->drawPixel(x + i, y + j, result / float(numSamples));
-            }
-        }
-    }
-}
-
-// traces all the rays and draws the pixels
-void ApolloRaytracer::drawPixels(Scene *s) {
-    Camera *currCam = s->getActiveCamera().get();
-    std::vector<std::future<void>> threads;
-
-    // makes each column of pixels its own thread
-    for (int x = 0; x < width; x += res) {
-        threads.push_back(
-            std::async(&ApolloRaytracer::drawColumn, this, currCam, s, x));
-    }
-
-    for (auto &t : threads) {
-        t.wait();
     }
 }
 
