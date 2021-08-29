@@ -6,13 +6,15 @@
 #include "SceneLoader.hpp"
 
 ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
-                                 int outHeight, int outRes, int maxRayDepth) {
+                                 int outHeight, int outRes, int maxRayDepth,
+                                 int numSamp) {
 
     width = outWidth;
     height = outHeight;
     shouldUpdate = true;
     res = outRes;
     currCam = 0;
+    numSamples = numSamp;
 
     rayDepth = maxRayDepth;
 
@@ -56,11 +58,15 @@ void ApolloRaytracer::run() {
 // traces rays one column at a time
 void ApolloRaytracer::drawColumn(Camera *c, Scene *s, int x) {
     for (int y = 0; y < height; y += res) {
-        Ray r = c->getRayAtPixel(x, y);
-        glm::vec3 result = r.traceRay(*s);
+        glm::vec3 result = glm::vec3(0);
+        float sampDist = float(res) / numSamples;
+        for (int n = 0; n < numSamples; n++) {
+            Ray r = c->getRayAtPixel(x + sampDist * n, y + sampDist * n);
+            result += r.traceRay(*s);
+        }
         for (int i = 0; i < res; i++) {
             for (int j = 0; j < res; j++) {
-                output->drawPixel(x + i, y + j, result);
+                output->drawPixel(x + i, y + j, result / float(numSamples));
             }
         }
     }

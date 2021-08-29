@@ -13,7 +13,7 @@ class Camera {
     Camera() {}
     virtual ~Camera() {}
 
-    virtual Ray getRayAtPixel(int x, int y) = 0;
+    virtual Ray getRayAtPixel(float x, float y) = 0;
 
     virtual void translate(glm::vec3 delta) = 0;
     virtual void rotate(float deltaPitch, float deltaYaw) = 0;

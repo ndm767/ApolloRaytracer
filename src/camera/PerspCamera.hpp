@@ -9,7 +9,7 @@ class PerspCamera : public Camera {
                 glm::vec3 direction, float horizFOV, int _maxRayDepth = 3);
     ~PerspCamera();
 
-    Ray getRayAtPixel(int x, int y) override;
+    Ray getRayAtPixel(float x, float y) override;
 
     void translate(glm::vec3 delta) override;
     void rotate(float deltaPitch, float deltaYaw) override;

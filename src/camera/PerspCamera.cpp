@@ -29,7 +29,7 @@ PerspCamera::PerspCamera(int screenWidth, int screenHeight, glm::vec3 position,
 
 PerspCamera::~PerspCamera() {}
 
-Ray PerspCamera::getRayAtPixel(int x, int y) {
+Ray PerspCamera::getRayAtPixel(float x, float y) {
     glm::vec3 orig = pos;
 
     // start with camera looking forward and find the pixel where the ray should

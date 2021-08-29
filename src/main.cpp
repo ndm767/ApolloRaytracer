@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
     ("h,height", "specify output height", cxxopts::value<int>()->default_value("400"))
     ("r,res", "specify number of pixels per ray", cxxopts::value<int>()->default_value("1"))
     ("d,depth", "specify maximum ray depth", cxxopts::value<int>()->default_value("3"))
+    ("n,numsamples", "number of samples per pixel", cxxopts::value<int>()->default_value("1"))
     ("help", "prints help message");   
     ;
 
@@ -32,8 +33,9 @@ int main(int argc, char *argv[]) {
     int height = results["height"].as<int>();
     int res = results["res"].as<int>();
     int depth = results["depth"].as<int>();
+    int samples = results["numsamples"].as<int>();
 
-    ApolloRaytracer apollo(scene, width, height, res, depth);
+    ApolloRaytracer apollo(scene, width, height, res, depth, samples);
     apollo.run();
     return 0;
 }
