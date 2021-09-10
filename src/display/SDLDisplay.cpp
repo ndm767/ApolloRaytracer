@@ -5,6 +5,8 @@
 
 SDLDisplay::SDLDisplay(unsigned width, unsigned height, bool useGL) {
     finished = false;
+
+    // useGL is for when we need a OpenGL context to use compute shaders
     glWin = useGL;
 
     // set display to black
