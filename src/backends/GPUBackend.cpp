@@ -33,8 +33,6 @@ void GPUBackend::render(Scene *s, Display *d) {
     shader->dispatch(w, h);
 
     outDat = shader->readSSBO(1, w * h * 3);
-    std::cout << outDat.at(0) << " " << outDat.at(1) << " " << outDat.at(2)
-              << std::endl;
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {
