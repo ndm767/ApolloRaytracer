@@ -6,12 +6,13 @@ PCXXSRC += $(wildcard src/geometry/*.cpp)
 PCXXSRC += $(wildcard src/camera/*.cpp)
 PCXXSRC += $(wildcard src/light/*.cpp)
 PCXXSRC += $(wildcard src/backends/*.cpp)
+PCXXSRC += $(wildcard src/backends/gpu/*.cpp)
 
 POBJS := $(PCXXSRC:.cpp=.o)
 
 CXXFLAGS += -std=c++17 -O3
 
-LDLIBS += -lSDL2 -lassimp -pthread
+LDLIBS += -lSDL2 -lGL -lGLEW -lassimp -pthread
 
 .SILENT: all $(POBJS)
 .PHONY: all

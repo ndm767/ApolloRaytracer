@@ -2,13 +2,15 @@
 
 #include "display.hpp"
 
+#include <GL/glew.h>
+
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
 // display that outputs to an sdl2 window
 class SDLDisplay : public Display {
   public:
-    SDLDisplay(unsigned width, unsigned height);
+    SDLDisplay(unsigned width, unsigned height, bool useGL);
     ~SDLDisplay();
 
     void drawPixel(unsigned x, unsigned y, glm::vec3 color) override;
@@ -22,6 +24,9 @@ class SDLDisplay : public Display {
   protected:
     SDL_Window *rWindow;
     SDL_Renderer *rRenderer;
+    SDL_GLContext rContext;
+
+    bool glWin;
 
     // sees if a key is in a vector
     bool inVector(std::vector<SDL_Scancode> &vec, SDL_Scancode key);

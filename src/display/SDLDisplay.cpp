@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <iostream>
 
-SDLDisplay::SDLDisplay(unsigned width, unsigned height) {
+SDLDisplay::SDLDisplay(unsigned width, unsigned height, bool useGL) {
     finished = false;
+    glWin = useGL;
 
     // set display to black
     for (unsigned x = 0; x < width; x++) {
@@ -16,13 +17,37 @@ SDLDisplay::SDLDisplay(unsigned width, unsigned height) {
     }
 
     SDL_Init(SDL_INIT_VIDEO);
+
+    if (useGL) {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                            SDL_GL_CONTEXT_PROFILE_CORE);
+    }
+
+    Uint32 winFlags = SDL_WINDOW_SHOWN;
+    if (useGL) {
+        winFlags |= SDL_WINDOW_OPENGL;
+    }
+
     rWindow = SDL_CreateWindow("Raytracer", SDL_WINDOWPOS_CENTERED,
-                               SDL_WINDOWPOS_CENTERED, width, height,
-                               SDL_WINDOW_SHOWN);
+                               SDL_WINDOWPOS_CENTERED, width, height, winFlags);
+
     rRenderer = SDL_CreateRenderer(rWindow, -1, SDL_RENDERER_ACCELERATED);
+
+    if (useGL) {
+        rContext = SDL_GL_CreateContext(rWindow);
+        SDL_GL_MakeCurrent(rWindow, rContext);
+
+        glewExperimental = true;
+        glewInit();
+    }
 }
 
 SDLDisplay::~SDLDisplay() {
+    if (glWin) {
+        SDL_GL_DeleteContext(rContext);
+    }
     SDL_DestroyRenderer(rRenderer);
     SDL_DestroyWindow(rWindow);
     SDL_Quit();
