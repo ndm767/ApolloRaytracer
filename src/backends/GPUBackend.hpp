@@ -2,6 +2,7 @@
 
 #include "backend.hpp"
 #include "gpu/ComputeShader.hpp"
+#include "gpu/SSBO.hpp"
 
 class GPUBackend : public Backend {
   public:

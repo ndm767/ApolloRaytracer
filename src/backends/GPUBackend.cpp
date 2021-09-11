@@ -22,17 +22,17 @@ void GPUBackend::render(Scene *s, Display *d) {
     shader->useProgram();
 
     std::vector<float> testDat = {1.0f, 0.0f, 0.0f};
-    shader->createSSBO(testDat, 0);
+    SSBO<float> testBuf(testDat, 0);
 
     std::vector<float> outDat;
     for (int i = 0; i < h * w * 3; i++) {
         outDat.push_back(0.0f);
     }
-    shader->createSSBO(outDat, 1);
+    SSBO<float> outBuf(outDat, 1);
 
     shader->dispatch(w, h);
 
-    outDat = shader->readSSBO(1, w * h * 3);
+    outDat = outBuf.read();
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {
