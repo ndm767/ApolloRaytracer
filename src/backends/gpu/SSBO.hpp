@@ -4,6 +4,9 @@
 
 #include <vector>
 
+#include "GPUTypes.hpp"
+#include <glm/glm.hpp>
+
 template <typename T>
 class SSBO {
   public:
@@ -19,3 +22,5 @@ class SSBO {
 };
 
 template class SSBO<float>;
+template class SSBO<glm::vec4>;
+template class SSBO<GPURay>;

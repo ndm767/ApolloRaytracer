@@ -1,5 +1,7 @@
 #include "GPUBackend.hpp"
 
+#include "../Ray.hpp"
+#include "gpu/GPUTypes.hpp"
 #include "gpu/HitShader.hpp"
 
 #include <GL/glew.h>
@@ -21,8 +23,21 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     shader->useProgram();
 
-    std::vector<float> testDat = {1.0f, 0.0f, 0.0f};
-    SSBO<float> testBuf(testDat, 0);
+    Camera *cam = s->getActiveCamera().get();
+
+    std::vector<GPURay> rayDat;
+
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            Ray r = cam->getRayAtPixel((float)x, (float)y);
+            GPURay gRay;
+            gRay.orig = glm::vec4(r.getOrig(), 1.0);
+            gRay.dir = glm::vec4(r.getDir(), 1.0);
+            rayDat.push_back(gRay);
+        }
+    }
+
+    SSBO<GPURay> rayBuf(rayDat, 0);
 
     std::vector<float> outDat;
     for (int i = 0; i < h * w * 3; i++) {
