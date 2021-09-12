@@ -7,10 +7,14 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
+#include "gl/DisplayShader.hpp"
+#include "gl/QuadRenderer.hpp"
+#include "gl/ScreenTexture.hpp"
+
 // display that outputs to an sdl2 window
 class SDLDisplay : public Display {
   public:
-    SDLDisplay(unsigned width, unsigned height, bool useGL);
+    SDLDisplay(unsigned width, unsigned height);
     ~SDLDisplay();
 
     void drawPixel(unsigned x, unsigned y, glm::vec3 color) override;
@@ -23,10 +27,11 @@ class SDLDisplay : public Display {
 
   protected:
     SDL_Window *rWindow;
-    SDL_Renderer *rRenderer;
     SDL_GLContext rContext;
 
-    bool glWin;
+    DisplayShader *shader;
+    QuadRenderer *quad;
+    ScreenTexture *tex;
 
     // sees if a key is in a vector
     bool inVector(std::vector<SDL_Scancode> &vec, SDL_Scancode key);

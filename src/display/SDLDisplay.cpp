@@ -3,11 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
-SDLDisplay::SDLDisplay(unsigned width, unsigned height, bool useGL) {
+SDLDisplay::SDLDisplay(unsigned width, unsigned height) {
     finished = false;
-
-    // useGL is for when we need a OpenGL context to use compute shaders
-    glWin = useGL;
 
     // set display to black
     for (unsigned x = 0; x < width; x++) {
@@ -20,37 +17,33 @@ SDLDisplay::SDLDisplay(unsigned width, unsigned height, bool useGL) {
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    if (useGL) {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                            SDL_GL_CONTEXT_PROFILE_CORE);
-    }
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
 
-    Uint32 winFlags = SDL_WINDOW_SHOWN;
-    if (useGL) {
-        winFlags |= SDL_WINDOW_OPENGL;
-    }
+    Uint32 winFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 
     rWindow = SDL_CreateWindow("Raytracer", SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED, width, height, winFlags);
 
-    rRenderer = SDL_CreateRenderer(rWindow, -1, SDL_RENDERER_ACCELERATED);
+    rContext = SDL_GL_CreateContext(rWindow);
+    SDL_GL_MakeCurrent(rWindow, rContext);
 
-    if (useGL) {
-        rContext = SDL_GL_CreateContext(rWindow);
-        SDL_GL_MakeCurrent(rWindow, rContext);
+    glewExperimental = true;
+    glewInit();
 
-        glewExperimental = true;
-        glewInit();
-    }
+    shader = new DisplayShader();
+    quad = new QuadRenderer();
+    tex = new ScreenTexture(pixels);
 }
 
 SDLDisplay::~SDLDisplay() {
-    if (glWin) {
-        SDL_GL_DeleteContext(rContext);
-    }
-    SDL_DestroyRenderer(rRenderer);
+    delete tex;
+    delete shader;
+    delete quad;
+
+    SDL_GL_DeleteContext(rContext);
     SDL_DestroyWindow(rWindow);
     SDL_Quit();
 }
@@ -84,19 +77,17 @@ void SDLDisplay::cleanKeys() {
 }
 
 void SDLDisplay::flush() {
-    SDL_SetRenderDrawColor(rRenderer, 0, 0, 0, 255);
-    SDL_RenderClear(rRenderer);
 
-    for (unsigned x = 0; x < pixels.size(); x++) {
-        for (unsigned y = 0; y < pixels.at(x).size(); y++) {
-            glm::vec3 col = pixels.at(x).at(y);
-            SDL_SetRenderDrawColor(rRenderer, Uint8(col.r * 255),
-                                   Uint8(col.g * 255), Uint8(col.b * 255), 255);
-            SDL_RenderDrawPoint(rRenderer, x, y);
-        }
-    }
+    tex->set(pixels);
 
-    SDL_RenderPresent(rRenderer);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    shader->use();
+    tex->use();
+    quad->render();
+
+    SDL_GL_SwapWindow(rWindow);
 
     SDL_Event e;
     bool keyEvent = false;
