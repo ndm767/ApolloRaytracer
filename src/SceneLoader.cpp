@@ -24,7 +24,7 @@ glm::vec3 SceneLoader::jArrToVec(jArr arr) {
 }
 
 void SceneLoader::loadScene(int screenWidth, int screenHeight, int rayDepth,
-                            std::string path, Scene &scene) {
+                            std::string path, Scene &scene, bool useMesh) {
 
     std::ifstream f(path);
     if (!f) {
@@ -125,7 +125,7 @@ void SceneLoader::loadScene(int screenWidth, int screenHeight, int rayDepth,
                 std::string path = currObj["source"].get<std::string>();
 
                 FileLoader fl;
-                fl.loadFile(path, scene, pos, scale, &mats.at(matNum));
+                fl.loadFile(path, scene, pos, scale, &mats.at(matNum), useMesh);
             }
         }
     }

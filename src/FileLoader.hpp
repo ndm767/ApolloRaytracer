@@ -12,5 +12,5 @@ class FileLoader {
     ~FileLoader();
 
     void loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
-                  float scale, Material *mat);
+                  float scale, Material *mat, bool useMesh);
 };

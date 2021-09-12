@@ -31,7 +31,7 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
     }
 
     SceneLoader sl;
-    sl.loadScene(width, height, rayDepth, scenePath, *scene);
+    sl.loadScene(width, height, rayDepth, scenePath, *scene, !useCPU);
 }
 
 ApolloRaytracer::~ApolloRaytracer() {

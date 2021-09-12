@@ -11,7 +11,7 @@ FileLoader::FileLoader() {}
 FileLoader::~FileLoader() {}
 
 void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
-                          float scale, Material *mat) {
+                          float scale, Material *mat, bool useMesh) {
     Assimp::Importer imp;
     const aiScene *scene = imp.ReadFile(
         path.c_str(),
@@ -65,23 +65,29 @@ void FileLoader::loadFile(std::string path, Scene &targetScene, glm::vec3 pos,
             matToUse = *mat;
         }
 
-        Mesh tempMesh(mi, pos, scale, matToUse);
+        if (useMesh) {
+            targetScene.addObject(
+                std::make_shared<Mesh>(mi, pos, scale, matToUse));
+        } else {
 
-        // the best performance is gotten when the number of subvoxels roughly
-        // equals the number of triangles in the model
-        // this is because if there are less subvoxels, then multiple triangles
-        // have to be tested per subvoxel and if there are less, then we are
-        // traversing excessive subvoxels
-        int numTris = tempMesh.getNumTris();
-        int numSubVoxels = 1;
-        int numLayers = 0;
-        while (numSubVoxels < numTris) {
-            numSubVoxels *= 8;
-            numLayers++;
+            Mesh tempMesh(mi, pos, scale, matToUse);
+
+            // the best performance is gotten when the number of subvoxels
+            // roughly equals the number of triangles in the model this is
+            // because if there are less subvoxels, then multiple triangles have
+            // to be tested per subvoxel and if there are less, then we are
+            // traversing excessive subvoxels
+            int numTris = tempMesh.getNumTris();
+            int numSubVoxels = 1;
+            int numLayers = 0;
+            while (numSubVoxels < numTris) {
+                numSubVoxels *= 8;
+                numLayers++;
+            }
+
+            targetScene.addObject(
+                std::make_shared<OctreeMesh>(tempMesh, numLayers));
         }
-
-        targetScene.addObject(
-            std::make_shared<OctreeMesh>(tempMesh, numLayers));
         // targetScene.addObject(std::make_shared<Mesh>(mi, pos, scale,
         // matToUse));
     }

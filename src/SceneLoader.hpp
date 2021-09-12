@@ -14,7 +14,7 @@ class SceneLoader {
     ~SceneLoader();
 
     void loadScene(int screenWidth, int screenHeight, int rayDepth,
-                   std::string path, Scene &scene);
+                   std::string path, Scene &scene, bool useMesh);
 
   protected:
     glm::vec3 jArrToVec(jArr arr);
