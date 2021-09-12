@@ -12,7 +12,7 @@
 class ApolloRaytracer {
   public:
     ApolloRaytracer(std::string scenePath, int outWidth, int outHeight,
-                    int outRes, int maxRayDepth, int numSamp);
+                    int outRes, int maxRayDepth, int numSamp, bool useCPU);
     ~ApolloRaytracer();
 
     void run();

@@ -3,11 +3,12 @@
 #include <iostream>
 
 #include "SceneLoader.hpp"
+#include "backends/CPUBackend.hpp"
 #include "backends/GPUBackend.hpp"
 
 ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
                                  int outHeight, int outRes, int maxRayDepth,
-                                 int numSamp) {
+                                 int numSamp, bool useCPU) {
 
     width = outWidth;
     height = outHeight;
@@ -23,8 +24,11 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
 
     scene = new Scene(width, height, rayDepth, glm::vec3(1, 1, 1), 0.1f);
 
-    // backend = new CPUBackend(width, height, numSamples, res);
-    backend = new GPUBackend(width, height, numSamp, res);
+    if (useCPU) {
+        backend = new CPUBackend(width, height, numSamples, res);
+    } else {
+        backend = new GPUBackend(width, height, numSamp, res);
+    }
 
     SceneLoader sl;
     sl.loadScene(width, height, rayDepth, scenePath, *scene);
