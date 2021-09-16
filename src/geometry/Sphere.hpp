@@ -9,6 +9,9 @@ class Sphere : public Object {
 
     bool testIntersection(HitData &data) override;
 
+    glm::vec3 getCenter() { return pos; }
+    float getRadius() { return r; }
+
   protected:
     float r;
 };

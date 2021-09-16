@@ -24,3 +24,5 @@ class SSBO {
 template class SSBO<float>;
 template class SSBO<glm::vec4>;
 template class SSBO<GPURay>;
+template class SSBO<GPUSphere>;
+template class SSBO<GPUTriangle>;
