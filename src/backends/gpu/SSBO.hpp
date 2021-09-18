@@ -26,3 +26,4 @@ template class SSBO<glm::vec4>;
 template class SSBO<GPURay>;
 template class SSBO<GPUSphere>;
 template class SSBO<GPUTriangle>;
+template class SSBO<GPUAABB>;

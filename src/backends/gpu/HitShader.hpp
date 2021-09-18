@@ -15,13 +15,19 @@ std::string hitShaderSrc = R""(
 
     struct Sphere {
         vec4 pos;
-        float r;
+        vec4 r;
     };
 
     struct Triangle {
         vec4 p1;
         vec4 p2;
         vec4 p3;
+    };
+
+    struct AABB{
+        vec4 minPos;
+        vec4 maxPos;
+        ivec4 triPos;
     };
 
     // buffers
@@ -45,15 +51,21 @@ std::string hitShaderSrc = R""(
         Triangle tris[];
     };
 
+    layout(std430, binding = 4) buffer boxBuf
+    {
+        AABB boxes[];
+    };
+
     // functions
     vec3 raySphereIntersect(Ray r, Sphere s){
         vec3 rayDir = r.dir.xyz;
         vec3 rayOrig = r.orig.xyz;
         vec3 sPos = s.pos.xyz;
+        float radius = s.r.x;
 
         float a = dot(rayDir, rayDir);
         float b = 2.0 * dot(rayDir, rayOrig - sPos);
-        float c = dot(rayOrig - sPos, rayOrig - sPos) - s.r * s.r;
+        float c = dot(rayOrig - sPos, rayOrig - sPos) - radius * radius;
 
         float disc = b*b - 4 * a * c;
         if(disc > 0){
@@ -147,14 +159,79 @@ std::string hitShaderSrc = R""(
         return (rayOrig + rayDir * t);
     }
 
-    vec3 testTris(Ray r){
+    bool rayBoxIntersection(Ray r, AABB b){
+        vec3 rayOrig = r.orig.xyz;
+        vec3 rayDir = r.dir.xyz;
+
+        vec3 minPos = b.minPos.xyz;
+        vec3 maxPos = b.maxPos.xyz;
+
+        if (rayDir.x != 0) {
+            float t = 0.0;
+            if (rayDir.x > 0) {
+                t = (minPos.x - rayOrig.x) / rayDir.x;
+            } else {
+                t = (maxPos.x - rayOrig.x) / rayDir.x;
+            }
+
+            float yPos = rayOrig.y + rayDir.y * t;
+            if (minPos.y <= yPos && maxPos.y >= yPos) {
+                float zPos = rayOrig.z + rayDir.z * t;
+                if (minPos.z <= zPos && maxPos.z >= zPos) {
+                    return true;
+                }
+            }
+        }
+
+        if (rayDir.y != 0) {
+            float t = 0.0;
+            if (rayDir.y > 0) {
+                t = (minPos.y - rayOrig.y) / rayDir.y;
+            } else {
+                t = (maxPos.y - rayOrig.y) / rayDir.y;
+            }
+
+            float xPos = rayOrig.x + rayDir.x * t;
+            if (minPos.x <= xPos && maxPos.x >= xPos) {
+                float zPos = rayOrig.z + rayDir.z * t;
+                if (minPos.z <= zPos && maxPos.z >= zPos) {
+                    return true;
+                }
+            }
+        }
+
+        if (rayDir.z != 0) {
+            float t = 0.0;
+            if (rayDir.z > 0) {
+                t = (minPos.z - rayOrig.z) / rayDir.z;
+            } else {
+                t = (maxPos.z - rayOrig.z) / rayDir.z;
+            }
+
+            float yPos = rayOrig.y + rayDir.y * t;
+            if (minPos.y <= yPos && maxPos.y >= yPos) {
+                float xPos = rayOrig.x + rayDir.x * t;
+                if (minPos.x <= xPos && maxPos.x >= xPos) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    vec3 testMeshes(Ray r){
         bool found = false;
         vec3 hitPos;
 
-        for(int i = 0; i<tris.length(); i++){
-            vec3 tempHitPos = rayTriangleIntersect(r, tris[i]);
-            if(tempHitPos != vec3(-1.0)){
-                found = true;
+        for(int i = 0; i<boxes.length(); i++){
+            if(rayBoxIntersection(r, boxes[i])){
+                for(int j = boxes[i].triPos.x; j<boxes[i].triPos.y; j++){
+                    vec3 tempHitPos = rayTriangleIntersect(r, tris[j]);
+                    if(tempHitPos != vec3(-1.0)){
+                        found = true;
+                    }
+                }
             }
         }
 
@@ -171,7 +248,7 @@ std::string hitShaderSrc = R""(
         int loc = (coords.x*400 + coords.y);
 
         vec3 outCol = testSpheres(rays[loc]);
-        outCol += testTris(rays[loc]);
+        outCol += testMeshes(rays[loc]);
 
         outDat[loc*3] = outCol.x;
         outDat[loc*3 + 1] = outCol.y;

@@ -50,19 +50,25 @@ void GPUBackend::render(Scene *s, Display *d) {
         if (sphereCast != nullptr) {
             GPUSphere sp;
             sp.center = glm::vec4(sphereCast->getCenter(), 1.0f);
-            sp.radius = sphereCast->getRadius();
+            sp.radius = glm::vec4(sphereCast->getRadius(), 0.0f, 0.0f, 0.0f);
             spheres.push_back(sp);
         }
     }
 
     SSBO<GPUSphere> sphereBuf(spheres, 2);
 
-    // triangle input
+    // triangle and AABB input
     std::vector<GPUTriangle> tris;
+    std::vector<GPUAABB> boxes;
     for (auto &o : objs) {
         auto oPtr = o.get();
         Mesh *meshCast = dynamic_cast<Mesh *>(oPtr);
         if (meshCast != nullptr) {
+            GPUAABB box;
+            auto bb = meshCast->getBoundingBox();
+            box.minPos = glm::vec4(bb->getMinPos(), 0.0f);
+            box.maxPos = glm::vec4(bb->getMaxPos(), 0.0f);
+            box.triPos.x = tris.size();
             auto meshTris = meshCast->getTris();
             for (auto &t : meshTris) {
                 GPUTriangle currTri;
@@ -72,10 +78,15 @@ void GPUBackend::render(Scene *s, Display *d) {
                 currTri.p3 = glm::vec4(triArray.at(2), 1.0f);
                 tris.push_back(currTri);
             }
+            box.triPos.y = tris.size();
+            box.triPos.z = 0;
+            box.triPos.w = 0;
+            boxes.push_back(box);
         }
     }
 
     SSBO<GPUTriangle> triBuf(tris, 3);
+    SSBO<GPUAABB> boxBuf(boxes, 4);
 
     // output
     std::vector<float> outDat;
