@@ -14,6 +14,9 @@ class SSBO {
     ~SSBO();
 
     std::vector<T> read();
+    void bind();
+
+    void modify(std::vector<T> data);
 
   protected:
     int binding;

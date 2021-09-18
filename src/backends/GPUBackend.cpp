@@ -18,30 +18,36 @@ GPUBackend::GPUBackend(int width, int height, int numSamples, int resolution) {
     res = resolution;
 
     shader = new ComputeShader(hitShaderSrc);
+
+    buffersMade = false;
 }
 
-GPUBackend::~GPUBackend() { delete shader; }
+GPUBackend::~GPUBackend() {
+    delete triBuf;
+    delete boxBuf;
+    delete sphereBuf;
+    delete rayBuf;
+    delete outBuf;
+    delete shader;
+}
 
-void GPUBackend::render(Scene *s, Display *d) {
-
-    shader->useProgram();
-
-    // ray input
-    Camera *cam = s->getActiveCamera().get();
-    std::vector<GPURay> rayDat;
-    for (int x = 0; x < w; x++) {
-        for (int y = 0; y < h; y++) {
-            Ray r = cam->getRayAtPixel((float)x, (float)y);
-            GPURay gRay;
-            gRay.orig = glm::vec4(r.getOrig(), 1.0);
-            gRay.dir = glm::vec4(r.getDir(), 1.0);
-            rayDat.push_back(gRay);
-        }
+void GPUBackend::createBuffers(Scene *s) {
+    // output data
+    std::vector<float> outDat;
+    for (int i = 0; i < h * w * 3; i++) {
+        outDat.push_back(0.0f);
     }
+    outBuf = new SSBO<float>(outDat, 0);
 
-    SSBO<GPURay> rayBuf(rayDat, 1);
+    // ray data
+    std::vector<GPURay> rayDat;
+    for (int i = 0; i < w * h; i++) {
+        GPURay empty;
+        rayDat.push_back(empty);
+    }
+    rayBuf = new SSBO<GPURay>(rayDat, 1);
 
-    // sphere input
+    // sphere data
     std::vector<GPUSphere> spheres;
     std::vector<std::shared_ptr<Object>> objs = s->getObjects();
     for (auto &o : objs) {
@@ -55,9 +61,9 @@ void GPUBackend::render(Scene *s, Display *d) {
         }
     }
 
-    SSBO<GPUSphere> sphereBuf(spheres, 2);
+    sphereBuf = new SSBO<GPUSphere>(spheres, 2);
 
-    // triangle and AABB input
+    // triangles and AABB
     std::vector<GPUTriangle> tris;
     std::vector<GPUAABB> boxes;
     for (auto &o : objs) {
@@ -85,19 +91,42 @@ void GPUBackend::render(Scene *s, Display *d) {
         }
     }
 
-    SSBO<GPUTriangle> triBuf(tris, 3);
-    SSBO<GPUAABB> boxBuf(boxes, 4);
+    triBuf = new SSBO<GPUTriangle>(tris, 3);
+    boxBuf = new SSBO<GPUAABB>(boxes, 4);
+}
 
-    // output
-    std::vector<float> outDat;
-    for (int i = 0; i < h * w * 3; i++) {
-        outDat.push_back(0.0f);
+void GPUBackend::render(Scene *s, Display *d) {
+
+    shader->useProgram();
+
+    if (!buffersMade) {
+        createBuffers(s);
+        buffersMade = true;
     }
-    SSBO<float> outBuf(outDat, 0);
+
+    // ray input
+    Camera *cam = s->getActiveCamera().get();
+    std::vector<GPURay> rayDat;
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            Ray r = cam->getRayAtPixel((float)x, (float)y);
+            GPURay gRay;
+            gRay.orig = glm::vec4(r.getOrig(), 1.0);
+            gRay.dir = glm::vec4(r.getDir(), 1.0);
+            rayDat.push_back(gRay);
+        }
+    }
+    rayBuf->modify(rayDat);
+
+    outBuf->bind();
+    rayBuf->bind();
+    sphereBuf->bind();
+    triBuf->bind();
+    boxBuf->bind();
 
     shader->dispatch(w, h);
 
-    outDat = outBuf.read();
+    auto outDat = outBuf->read();
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {

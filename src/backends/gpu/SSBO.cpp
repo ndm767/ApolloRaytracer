@@ -28,3 +28,16 @@ std::vector<T> SSBO<T>::read() {
 
     return ret;
 }
+
+template <typename T>
+void SSBO<T>::bind() {
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+}
+
+template <typename T>
+void SSBO<T>::modify(std::vector<T> data) {
+    bind();
+
+    glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(T), data.data(),
+                 GL_DYNAMIC_DRAW);
+}
