@@ -16,6 +16,8 @@ class GPUBackend : public Backend {
     void render(Scene *s, Display *d) override;
 
     glm::vec3 getHitColor(GPURetData hitData, Scene *s);
+    void drawColumn(int x, Scene *s, Display *d,
+                    std::vector<GPURetData> outDat);
 
   protected:
     ComputeShader *shader;

@@ -9,6 +9,7 @@
 
 #include <GL/glew.h>
 
+#include <future>
 #include <iostream>
 
 GPUBackend::GPUBackend(int width, int height, int numSamples, int resolution) {
@@ -144,11 +145,23 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     auto outDat = outBuf->read();
 
+    std::vector<std::future<void>> threads;
+
     for (int x = 0; x < w; x++) {
-        for (int y = 0; y < h; y++) {
-            glm::vec3 color = getHitColor(outDat.at(400 * x + y), s);
-            d->drawPixel(x, y, glm::vec3(color.x, color.y, color.z));
-        }
+        threads.push_back(
+            std::async(&GPUBackend::drawColumn, this, x, s, d, outDat));
+    }
+
+    for (auto &t : threads) {
+        t.wait();
+    }
+}
+
+void GPUBackend::drawColumn(int x, Scene *s, Display *d,
+                            std::vector<GPURetData> outDat) {
+    for (int y = 0; y < h; y++) {
+        glm::vec3 color = getHitColor(outDat.at(400 * x + y), s);
+        d->drawPixel(x, y, color);
     }
 }
 
