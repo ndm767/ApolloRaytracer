@@ -15,6 +15,8 @@ class GPUBackend : public Backend {
     void createBuffers(Scene *s);
     void render(Scene *s, Display *d) override;
 
+    glm::vec3 getHitColor(GPURetData hitData, Scene *s);
+
   protected:
     ComputeShader *shader;
     bool buffersMade;

@@ -146,13 +146,21 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {
-            glm::vec3 color;
-            if (outDat.at(400 * x + y).matIndex.y == -1) {
-                color = glm::vec3(0.0f);
-            } else {
-                color = mats.at(outDat.at(400 * x + y).matIndex.x).getDiffuse();
-            }
+            glm::vec3 color = getHitColor(outDat.at(400 * x + y), s);
             d->drawPixel(x, y, glm::vec3(color.x, color.y, color.z));
+        }
+    }
+}
+
+glm::vec3 GPUBackend::getHitColor(GPURetData hitData, Scene *s) {
+    if (hitData.matIndex.y != -1) {
+        return mats.at(hitData.matIndex.x).getDiffuse();
+    } else {
+        if (s->getUseEnv()) {
+            return s->getEnvColor(glm::vec3(hitData.hitPos.x, hitData.hitPos.y,
+                                            hitData.hitPos.z));
+        } else {
+            return glm::vec3(0.0f);
         }
     }
 }

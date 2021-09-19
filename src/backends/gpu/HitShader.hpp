@@ -298,6 +298,7 @@ std::string hitShaderSrc = R""(
             outDat[loc] = meshRet;
         }else{
             outDat[loc].matIndex.y = -1;
+            outDat[loc].hitPos = rays[loc].dir;
         }
 
     }
