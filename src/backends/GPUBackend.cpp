@@ -32,6 +32,13 @@ GPUBackend::~GPUBackend() {
 }
 
 void GPUBackend::createBuffers(Scene *s) {
+    // delete previous buffers if we are recreating them
+    if (buffersMade) {
+        delete triBuf;
+        delete boxBuf;
+        delete sphereBuf;
+        delete rayBuf;
+    }
     // output data
     std::vector<float> outDat;
     for (int i = 0; i < h * w * 3; i++) {
@@ -99,6 +106,7 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     shader->useProgram();
 
+    // leaving this open to potential scene changes in the future
     if (!buffersMade) {
         createBuffers(s);
         buffersMade = true;
