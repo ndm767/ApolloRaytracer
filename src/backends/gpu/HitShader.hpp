@@ -16,12 +16,15 @@ std::string hitShaderSrc = R""(
     struct Sphere {
         vec4 pos;
         vec4 r;
+        ivec4 matIndex;
     };
 
     struct Triangle {
         vec4 p1;
         vec4 p2;
         vec4 p3;
+        vec4 normal;
+        ivec4 matIndex;
     };
 
     struct AABB{
@@ -30,10 +33,16 @@ std::string hitShaderSrc = R""(
         ivec4 triPos;
     };
 
+    struct GPURetData{
+        vec4 hitPos;
+        vec4 hitNorm;
+        ivec4 matIndex;
+    };
+
     // buffers
     layout(std430, binding = 0) buffer outBuf
     {
-        float outDat[];
+        GPURetData outDat[];
     };
 
     layout(std430, binding = 1) buffer rayBuf
@@ -281,9 +290,7 @@ std::string hitShaderSrc = R""(
             outCol = vec3(0.0);
         }
 
-        outDat[loc*3] = outCol.x;
-        outDat[loc*3 + 1] = outCol.y;
-        outDat[loc*3 + 2] = outCol.z;
+        outDat[loc].hitPos = vec4(outCol, 1.0);
 
     }
 )"";

@@ -16,6 +16,7 @@ class Triangle : public Object {
     std::array<glm::vec3, 3> getPoints() {
         return std::array<glm::vec3, 3>{p[0], p[1], p[2]};
     }
+    glm::vec3 getNorm() { return norm; }
 
   protected:
     glm::vec3 p[3];

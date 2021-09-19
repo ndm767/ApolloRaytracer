@@ -18,7 +18,7 @@ class GPUBackend : public Backend {
     ComputeShader *shader;
     bool buffersMade;
     // buffers
-    SSBO<float> *outBuf;
+    SSBO<GPURetData> *outBuf;
     SSBO<GPURay> *rayBuf;
     SSBO<GPUSphere> *sphereBuf;
     SSBO<GPUTriangle> *triBuf;

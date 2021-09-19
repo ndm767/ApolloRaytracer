@@ -30,3 +30,4 @@ template class SSBO<GPURay>;
 template class SSBO<GPUSphere>;
 template class SSBO<GPUTriangle>;
 template class SSBO<GPUAABB>;
+template class SSBO<GPURetData>;

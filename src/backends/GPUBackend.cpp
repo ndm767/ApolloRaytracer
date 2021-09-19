@@ -40,11 +40,12 @@ void GPUBackend::createBuffers(Scene *s) {
         delete rayBuf;
     }
     // output data
-    std::vector<float> outDat;
-    for (int i = 0; i < h * w * 3; i++) {
-        outDat.push_back(0.0f);
+    std::vector<GPURetData> outDat;
+    for (int i = 0; i < h * w; i++) {
+        GPURetData empty;
+        outDat.push_back(empty);
     }
-    outBuf = new SSBO<float>(outDat, 0);
+    outBuf = new SSBO<GPURetData>(outDat, 0);
 
     // ray data
     std::vector<GPURay> rayDat;
@@ -89,6 +90,7 @@ void GPUBackend::createBuffers(Scene *s) {
                 currTri.p1 = glm::vec4(triArray.at(0), 1.0f);
                 currTri.p2 = glm::vec4(triArray.at(1), 1.0f);
                 currTri.p3 = glm::vec4(triArray.at(2), 1.0f);
+                currTri.normal = glm::vec4(t.get()->getNorm(), 1.0f);
                 tris.push_back(currTri);
             }
             box.triPos.y = tris.size();
@@ -138,10 +140,8 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {
-            d->drawPixel(x, y,
-                         glm::vec3(outDat.at((400 * x + y) * 3),
-                                   outDat.at((400 * x + y) * 3 + 1),
-                                   outDat.at((400 * x + y) * 3 + 2)));
+            glm::vec4 color = outDat.at((400 * x + y)).hitPos;
+            d->drawPixel(x, y, glm::vec3(color.x, color.y, color.z));
         }
     }
 }
