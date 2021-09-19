@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Material.hpp"
 #include "backend.hpp"
 #include "gpu/ComputeShader.hpp"
 #include "gpu/SSBO.hpp"
@@ -17,6 +18,7 @@ class GPUBackend : public Backend {
   protected:
     ComputeShader *shader;
     bool buffersMade;
+    std::vector<Material> mats;
     // buffers
     SSBO<GPURetData> *outBuf;
     SSBO<GPURay> *rayBuf;

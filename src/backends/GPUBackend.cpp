@@ -65,6 +65,8 @@ void GPUBackend::createBuffers(Scene *s) {
             GPUSphere sp;
             sp.center = glm::vec4(sphereCast->getCenter(), 1.0f);
             sp.radius = glm::vec4(sphereCast->getRadius(), 0.0f, 0.0f, 0.0f);
+            sp.matIndex.x = mats.size();
+            mats.push_back(sphereCast->getMaterial());
             spheres.push_back(sp);
         }
     }
@@ -78,6 +80,9 @@ void GPUBackend::createBuffers(Scene *s) {
         auto oPtr = o.get();
         Mesh *meshCast = dynamic_cast<Mesh *>(oPtr);
         if (meshCast != nullptr) {
+            /** CHANGE THIS FOR MULTIPLE MATERIALS PER MESH **/
+            int matInd = mats.size();
+            mats.push_back(meshCast->getMaterial());
             GPUAABB box;
             auto bb = meshCast->getBoundingBox();
             box.minPos = glm::vec4(bb->getMinPos(), 0.0f);
@@ -91,6 +96,7 @@ void GPUBackend::createBuffers(Scene *s) {
                 currTri.p2 = glm::vec4(triArray.at(1), 1.0f);
                 currTri.p3 = glm::vec4(triArray.at(2), 1.0f);
                 currTri.normal = glm::vec4(t.get()->getNorm(), 1.0f);
+                currTri.matIndex.x = matInd;
                 tris.push_back(currTri);
             }
             box.triPos.y = tris.size();
@@ -140,7 +146,12 @@ void GPUBackend::render(Scene *s, Display *d) {
 
     for (int x = 0; x < w; x++) {
         for (int y = 0; y < h; y++) {
-            glm::vec4 color = outDat.at((400 * x + y)).hitPos;
+            glm::vec3 color;
+            if (outDat.at(400 * x + y).matIndex.y == -1) {
+                color = glm::vec3(0.0f);
+            } else {
+                color = mats.at(outDat.at(400 * x + y).matIndex.x).getDiffuse();
+            }
             d->drawPixel(x, y, glm::vec3(color.x, color.y, color.z));
         }
     }

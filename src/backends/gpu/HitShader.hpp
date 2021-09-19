@@ -66,11 +66,14 @@ std::string hitShaderSrc = R""(
     };
 
     // functions
-    vec3 raySphereIntersect(Ray r, Sphere s){
+    GPURetData raySphereIntersect(Ray r, Sphere s){
         vec3 rayDir = r.dir.xyz;
         vec3 rayOrig = r.orig.xyz;
         vec3 sPos = s.pos.xyz;
         float radius = s.r.x;
+
+        GPURetData ret;
+        ret.matIndex.y = -1;
 
         float a = dot(rayDir, rayDir);
         float b = 2.0 * dot(rayDir, rayOrig - sPos);
@@ -91,43 +94,49 @@ std::string hitShaderSrc = R""(
 
             float epsilon = pow(2.0, -52.0);
             if(coef > epsilon){
-                return rayOrig + rayDir * coef;
+                vec3 hitPos = rayOrig+rayDir*coef;
+                ret.hitPos = vec4(hitPos, 0.0);
+                vec3 hitNorm = ret.hitPos.xyz - sPos;
+                ret.hitNorm = vec4(hitNorm, 0.0);
+                ret.matIndex.y = 1;
+                ret.matIndex.x = s.matIndex.x;
+                return ret;
             }else{
-                return vec3(-1.0);
+                return ret;
             }
         }else{
-            return vec3(-1.0);
+            return ret;
         }
     }
 
-    vec3 testSpheres(Ray r){
+    GPURetData testSpheres(Ray r){
         bool found = false;
-        vec3 hitPos;
+        GPURetData ret;
+        ret.matIndex.y = -1;
 
         for(int i = 0; i<spheres.length(); i++){
-            vec3 tempHitPos = raySphereIntersect(r, spheres[i]);
-            if(tempHitPos != vec3(-1.0)){
-                if(!found || distance(tempHitPos, r.orig.xyz) < distance(hitPos, r.orig.xyz)){
-                    hitPos = tempHitPos;
+            GPURetData tempRet = raySphereIntersect(r, spheres[i]);
+            if(tempRet.matIndex.y != -1){
+                if(!found || distance(tempRet.hitPos.xyz, r.orig.xyz) < distance(ret.hitPos.xyz, r.orig.xyz)){
+                    ret = tempRet;
                 }
                 found = true;
             }
         }
 
-        if(found){
-            return hitPos;
-        }
-
-        return r.orig.xyz;
+        return ret;
     }
 
-    vec3 rayTriangleIntersect(Ray r, Triangle tri){
+    GPURetData rayTriangleIntersect(Ray r, Triangle tri){
         vec3 p0 = tri.p1.xyz;
         vec3 p1 = tri.p2.xyz;
         vec3 p2 = tri.p3.xyz;
 
         vec3 rayDir = r.dir.xyz;
         vec3 rayOrig = r.orig.xyz;
+
+        GPURetData ret;
+        ret.matIndex.y = -1;
 
 
         // a mat
@@ -145,7 +154,7 @@ std::string hitShaderSrc = R""(
 
         float t = determinant(tMat) / detA;
         if (t < 0) {
-            return vec3(-1.0);
+            return ret;
         }
 
         mat3 gMat;
@@ -155,7 +164,7 @@ std::string hitShaderSrc = R""(
 
         float gamma = determinant(gMat) / detA;
         if (gamma < 0 || gamma > 1) {
-            return vec3(-1.0);
+            return ret;
         }
 
         mat3 bMat;
@@ -165,10 +174,14 @@ std::string hitShaderSrc = R""(
 
         float beta = determinant(bMat) / detA;
         if (beta < 0 || beta > 1 - gamma) {
-            return vec3(-1.0);
+            return ret;
         }
 
-        return (rayOrig + rayDir * t);
+        ret.hitPos = vec4(rayOrig + rayDir * t, 0.0);
+        ret.hitNorm = tri.normal;
+        ret.matIndex.x = tri.matIndex.x;
+        ret.matIndex.y = 1;
+        return ret;
     }
 
     bool rayBoxIntersection(Ray r, AABB b){
@@ -232,17 +245,18 @@ std::string hitShaderSrc = R""(
         return false;
     }
 
-    vec3 testMeshes(Ray r){
+    GPURetData testMeshes(Ray r){
         bool found = false;
-        vec3 hitPos;
+        GPURetData ret;
+        ret.matIndex.y = -1;
 
         for(int i = 0; i<boxes.length(); i++){
             if(rayBoxIntersection(r, boxes[i])){
                 for(int j = boxes[i].triPos.x; j<boxes[i].triPos.y; j++){
-                    vec3 tempHitPos = rayTriangleIntersect(r, tris[j]);
-                    if(tempHitPos != vec3(-1.0)){
-                        if(!found || distance(tempHitPos, r.orig.xyz) < distance(hitPos, r.orig.xyz)){
-                            hitPos = tempHitPos;
+                    GPURetData tempRet = rayTriangleIntersect(r, tris[j]);
+                    if(tempRet.matIndex.y != -1){
+                        if(!found || distance(tempRet.hitPos.xyz, r.orig.xyz) < distance(ret.hitPos.xyz, r.orig.xyz)){
+                            ret = tempRet;
                         }
                         found = true;
                     }
@@ -250,11 +264,7 @@ std::string hitShaderSrc = R""(
             }
         }
 
-        if(found){
-            return hitPos;
-        }
-
-        return r.orig.xyz;
+        return ret;
     }
 
     void main(){
@@ -262,35 +272,33 @@ std::string hitShaderSrc = R""(
 
         int loc = (coords.x*400 + coords.y);
 
-        vec3 spherePos = testSpheres(rays[loc]);
-        vec3 meshPos = testMeshes(rays[loc]);
+        GPURetData sphereRet = testSpheres(rays[loc]);
+        GPURetData meshRet = testMeshes(rays[loc]);
 
         bool sphereFound = true;
-        if(spherePos == rays[loc].orig.xyz){
+        if(sphereRet.matIndex.y == -1){
             sphereFound = false;
         }
 
         bool meshFound = true;
-        if(meshPos == rays[loc].orig.xyz){
+        if(meshRet.matIndex.y == -1){
             meshFound = false;
         }
 
         vec3 outCol;
         if(sphereFound && meshFound){
-            if(distance(spherePos, rays[loc].orig.xyz) < distance(meshPos, rays[loc].orig.xyz)){
-                outCol = vec3(1.0, 0.0, 0.0);
+            if(distance(sphereRet.hitPos.xyz, rays[loc].orig.xyz) < distance(meshRet.hitPos.xyz, rays[loc].orig.xyz)){
+                outDat[loc] = sphereRet;
             }else{
-                outCol = vec3(0.0, 0.0, 1.0);
+                outDat[loc] = meshRet;
             }
         }else if(sphereFound){
-            outCol = vec3(1.0, 0.0, 0.0);
+            outDat[loc] = sphereRet;
         }else if(meshFound){
-            outCol = vec3(0.0, 0.0, 1.0);
+            outDat[loc] = meshRet;
         }else{
-            outCol = vec3(0.0);
+            outDat[loc].matIndex.y = -1;
         }
-
-        outDat[loc].hitPos = vec4(outCol, 1.0);
 
     }
 )"";
