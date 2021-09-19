@@ -98,15 +98,18 @@ std::string hitShaderSrc = R""(
         for(int i = 0; i<spheres.length(); i++){
             vec3 tempHitPos = raySphereIntersect(r, spheres[i]);
             if(tempHitPos != vec3(-1.0)){
+                if(!found || distance(tempHitPos, r.orig.xyz) < distance(hitPos, r.orig.xyz)){
+                    hitPos = tempHitPos;
+                }
                 found = true;
             }
         }
 
         if(found){
-            return vec3(1, 0, 0);
+            return hitPos;
         }
 
-        return vec3(0.0);
+        return r.orig.xyz;
     }
 
     vec3 rayTriangleIntersect(Ray r, Triangle tri){
@@ -229,6 +232,9 @@ std::string hitShaderSrc = R""(
                 for(int j = boxes[i].triPos.x; j<boxes[i].triPos.y; j++){
                     vec3 tempHitPos = rayTriangleIntersect(r, tris[j]);
                     if(tempHitPos != vec3(-1.0)){
+                        if(!found || distance(tempHitPos, r.orig.xyz) < distance(hitPos, r.orig.xyz)){
+                            hitPos = tempHitPos;
+                        }
                         found = true;
                     }
                 }
@@ -236,10 +242,10 @@ std::string hitShaderSrc = R""(
         }
 
         if(found){
-            return vec3(0, 1, 0);
+            return hitPos;
         }
 
-        return vec3(0.0);
+        return r.orig.xyz;
     }
 
     void main(){
@@ -247,8 +253,33 @@ std::string hitShaderSrc = R""(
 
         int loc = (coords.x*400 + coords.y);
 
-        vec3 outCol = testSpheres(rays[loc]);
-        outCol += testMeshes(rays[loc]);
+        vec3 spherePos = testSpheres(rays[loc]);
+        vec3 meshPos = testMeshes(rays[loc]);
+
+        bool sphereFound = true;
+        if(spherePos == rays[loc].orig.xyz){
+            sphereFound = false;
+        }
+
+        bool meshFound = true;
+        if(meshPos == rays[loc].orig.xyz){
+            meshFound = false;
+        }
+
+        vec3 outCol;
+        if(sphereFound && meshFound){
+            if(distance(spherePos, rays[loc].orig.xyz) < distance(meshPos, rays[loc].orig.xyz)){
+                outCol = vec3(1.0, 0.0, 0.0);
+            }else{
+                outCol = vec3(0.0, 0.0, 1.0);
+            }
+        }else if(sphereFound){
+            outCol = vec3(1.0, 0.0, 0.0);
+        }else if(meshFound){
+            outCol = vec3(0.0, 0.0, 1.0);
+        }else{
+            outCol = vec3(0.0);
+        }
 
         outDat[loc*3] = outCol.x;
         outDat[loc*3 + 1] = outCol.y;
