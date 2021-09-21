@@ -111,6 +111,21 @@ void GPUBackend::createBuffers(Scene *s) {
     boxBuf = new SSBO<GPUAABB>(boxes, 4);
 }
 
+// perform one GPU dispatch call on the provided rays
+std::vector<GPURetData> GPUBackend::getRenderPass(std::vector<GPURay> raysIn) {
+    rayBuf->modify(raysIn);
+
+    outBuf->bind();
+    rayBuf->bind();
+    sphereBuf->bind();
+    triBuf->bind();
+    boxBuf->bind();
+
+    shader->dispatch(w, h);
+
+    return outBuf->read();
+}
+
 void GPUBackend::render(Scene *s, Display *d) {
 
     shader->useProgram();
@@ -133,18 +148,11 @@ void GPUBackend::render(Scene *s, Display *d) {
             rayDat.push_back(gRay);
         }
     }
-    rayBuf->modify(rayDat);
 
-    outBuf->bind();
-    rayBuf->bind();
-    sphereBuf->bind();
-    triBuf->bind();
-    boxBuf->bind();
+    // first pass
+    auto outDat = getRenderPass(rayDat);
 
-    shader->dispatch(w, h);
-
-    auto outDat = outBuf->read();
-
+    // drawing
     std::vector<std::future<void>> threads;
 
     for (int x = 0; x < w; x++) {

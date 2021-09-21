@@ -14,6 +14,7 @@ class GPUBackend : public Backend {
 
     void createBuffers(Scene *s);
     void render(Scene *s, Display *d) override;
+    std::vector<GPURetData> getRenderPass(std::vector<GPURay> raysIn);
 
     glm::vec3 getHitColor(GPURetData hitData, Scene *s);
     void drawColumn(int x, Scene *s, Display *d,
