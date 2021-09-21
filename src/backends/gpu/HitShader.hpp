@@ -7,6 +7,9 @@ std::string hitShaderSrc = R""(
     
     layout(local_size_x = 1, local_size_y = 1) in; 
     
+    // uniforms 
+    uniform int screenWidth;
+
     // structs
     struct Ray {
         vec4 orig;
@@ -270,7 +273,7 @@ std::string hitShaderSrc = R""(
     void main(){
         ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
 
-        int loc = (coords.x*400 + coords.y);
+        int loc = (coords.x*screenWidth + coords.y);
 
         GPURetData sphereRet = testSpheres(rays[loc]);
         GPURetData meshRet = testMeshes(rays[loc]);

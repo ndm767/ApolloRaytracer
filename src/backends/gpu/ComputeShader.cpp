@@ -38,3 +38,8 @@ void ComputeShader::dispatch(int width, int height) {
 
     glMemoryBarrier(GL_UNIFORM_BARRIER_BIT);
 }
+
+void ComputeShader::setUniform1i(std::string name, int value) {
+    GLuint uniLoc = glGetUniformLocation(program, name.c_str());
+    glUniform1i(uniLoc, value);
+}

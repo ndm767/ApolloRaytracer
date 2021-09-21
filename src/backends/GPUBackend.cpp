@@ -121,6 +121,8 @@ std::vector<GPURetData> GPUBackend::getRenderPass(std::vector<GPURay> raysIn) {
     triBuf->bind();
     boxBuf->bind();
 
+    shader->setUniform1i("screenWidth", w);
+
     shader->dispatch(w, h);
 
     return outBuf->read();
