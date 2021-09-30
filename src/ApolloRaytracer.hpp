@@ -31,4 +31,7 @@ class ApolloRaytracer {
     Backend *backend;
 
     bool shouldUpdate;
+
+    int numFrames;
+    Uint32 totalTime;
 };

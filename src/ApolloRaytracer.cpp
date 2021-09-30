@@ -32,6 +32,9 @@ ApolloRaytracer::ApolloRaytracer(std::string scenePath, int outWidth,
 
     SceneLoader sl;
     sl.loadScene(width, height, rayDepth, scenePath, *scene, !useCPU);
+
+    numFrames = 0;
+    totalTime = 0;
 }
 
 ApolloRaytracer::~ApolloRaytracer() {
@@ -48,6 +51,8 @@ void ApolloRaytracer::run() {
             Uint32 eTime = SDL_GetTicks();
             // std::cout << "Frame time: " << eTime - sTime << std::endl;
             shouldUpdate = false;
+            totalTime += (eTime - sTime);
+            numFrames += 1;
         }
 
         output->flush();
@@ -61,6 +66,8 @@ void ApolloRaytracer::run() {
             scene->setActiveCamera(currCam);
         }
     }
+
+    std::cout << "Average Frame Time: " << totalTime / numFrames << std::endl;
 }
 
 // handles events for when the display is an SDLDisplay
