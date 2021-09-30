@@ -27,7 +27,7 @@ ScreenTexture::ScreenTexture(std::vector<std::vector<glm::vec3>> &pixels) {
 
 ScreenTexture::~ScreenTexture() {
     glDeleteTextures(1, &texture);
-    delete data;
+    delete[] data;
 }
 
 void ScreenTexture::set(std::vector<std::vector<glm::vec3>> &pixels) {
