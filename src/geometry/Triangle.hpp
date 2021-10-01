@@ -20,6 +20,8 @@ class Triangle : public Object {
 
   protected:
     glm::vec3 p[3];
+    glm::vec3 edge1;
+    glm::vec3 edge2;
 
     glm::vec3 norm;
 };

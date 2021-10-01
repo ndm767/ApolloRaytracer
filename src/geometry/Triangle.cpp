@@ -17,6 +17,9 @@ Triangle::Triangle(glm::vec3 points[3], Material mat, glm::vec3 triNorm) {
         norm = triNorm;
     }
 
+    edge1 = p[0] - p[1];
+    edge2 = p[0] - p[2];
+
     objMat = mat;
 }
 
@@ -31,18 +34,18 @@ bool Triangle::testIntersection(HitData &data) {
 
     // clang-format off
     float aMat[] = {
-        p[0].x - p[1].x, p[0].x - p[2].x, rayDir.x,
-        p[0].y - p[1].y, p[0].y - p[2].y, rayDir.y,
-        p[0].z - p[1].z, p[0].z - p[2].z, rayDir.z
+        edge1.x, edge2.x, rayDir.x,
+        edge1.y, edge2.y, rayDir.y,
+        edge1.z, edge2.z, rayDir.z
     };
     // clang-format on
     float detA = glm::determinant(glm::make_mat3(aMat));
 
     // clang-format off
     float tMat[] = {
-        p[0].x - p[1].x, p[0].x - p[2].x, p[0].x - rayOrig.x,
-        p[0].y - p[1].y, p[0].y - p[2].y, p[0].y - rayOrig.y,
-        p[0].z - p[1].z, p[0].z - p[2].z, p[0].z - rayOrig.z
+        edge1.x, edge2.x, p[0].x - rayOrig.x,
+        edge1.y, edge2.y, p[0].y - rayOrig.y,
+        edge1.z, edge2.z, p[0].z - rayOrig.z
     };
     // clang-format on
 
@@ -53,9 +56,9 @@ bool Triangle::testIntersection(HitData &data) {
 
     // clang-format off
     float gMat[] = {
-        p[0].x - p[1].x, p[0].x - rayOrig.x, rayDir.x,
-        p[0].y - p[1].y, p[0].y - rayOrig.y, rayDir.y,
-        p[0].z - p[1].z, p[0].z - rayOrig.z, rayDir.z
+        edge1.x, p[0].x - rayOrig.x, rayDir.x,
+        edge1.y, p[0].y - rayOrig.y, rayDir.y,
+        edge1.z, p[0].z - rayOrig.z, rayDir.z
     };
     // clang-format on
 
@@ -66,9 +69,9 @@ bool Triangle::testIntersection(HitData &data) {
 
     // clang-format off
     float bMat[] = {
-        p[0].x - rayOrig.x, p[0].x - p[2].x, rayDir.x,
-        p[0].y - rayOrig.y, p[0].y - p[2].y, rayDir.y,
-        p[0].z - rayOrig.z, p[0].z - p[2].z, rayDir.z
+        p[0].x - rayOrig.x, edge2.x, rayDir.x,
+        p[0].y - rayOrig.y, edge2.y, rayDir.y,
+        p[0].z - rayOrig.z, edge2.z, rayDir.z
     };
     // clang-format on
 
